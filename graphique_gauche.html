@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Graphique Bastions Gauche</title>
+</head>
+<body style="padding: 50px; background: #f9f9f9;">
+    <div style="font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 8px; background: white;">
+        <h3 style="text-align: center; color: #333;">Que sont devenus les électeurs de gauche au 2nd tour ?</h3>
+        <p style="font-size: 13px; color: #666; text-align: center; margin-bottom: 25px;">Sur la base de 100 % des voix de gauche au 1er tour (Hurmic + Raymond + Poutou)</p>
+
+        <!-- Légende -->
+        <div style="display: flex; justify-content: center; gap: 20px; font-size: 13px; margin-bottom: 30px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center;"><span style="display: inline-block; width: 12px; height: 12px; background: #27ae60; margin-right: 5px; border-radius: 2px;"></span> Fidèles à Hurmic</div>
+            <div style="display: flex; align-items: center;"><span style="display: inline-block; width: 12px; height: 12px; background: #e67e22; margin-right: 5px; border-radius: 2px;"></span> Abstention / Démobilisation</div>
+            <div style="display: flex; align-items: center;"><span style="display: inline-block; width: 12px; height: 12px; background: #c0392b; margin-right: 5px; border-radius: 2px;"></span> Basculement vers Cazenave</div>
+        </div>
+
+        <!-- Graphique SVG -->
+        <svg viewBox="0 0 600 400" width="100%" height="auto" style="overflow: visible;">
+            <!-- Axes et lignes de fond -->
+            <line x1="60" y1="350" x2="580" y2="350" stroke="#ccc" stroke-width="1" />
+            <line x1="60" y1="50" x2="60" y2="350" stroke="#ccc" stroke-width="1" />
+            
+            <text x="50" y="350" text-anchor="end" font-size="10" fill="#999">0 %</text>
+            <text x="50" y="200" text-anchor="end" font-size="10" fill="#999">50 %</text>
+            <text x="50" y="50" text-anchor="end" font-size="10" fill="#999">100 %</text>
+
+            <!-- Bureau 1062 - Menuts 2 -->
+            <g>
+                <rect x="80" y="112" width="40" height="238" fill="#27ae60" />
+                <rect x="80" y="58" width="40" height="54" fill="#e67e22" />
+                <rect x="80" y="50" width="40" height="8" fill="#c0392b" />
+                <text x="100" y="370" text-anchor="middle" font-size="10" transform="rotate(45, 100, 370)" fill="#666">Menuts 2</text>
+                <text x="100" y="231" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">79%</text>
+            </g>
+
+            <!-- Bureau 5001 - Meunier 1 -->
+            <g>
+                <rect x="150" y="123" width="40" height="227" fill="#27ae60" />
+                <rect x="150" y="59" width="40" height="64" fill="#e67e22" />
+                <rect x="150" y="50" width="40" height="9" fill="#c0392b" />
+                <text x="170" y="370" text-anchor="middle" font-size="10" transform="rotate(45, 170, 370)" fill="#666">Meunier 1</text>
+                <text x="170" y="236" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">75%</text>
+            </g>
+
+            <!-- Bureau 5003 - Meunier 3 -->
+            <g>
+                <rect x="220" y="133" width="40" height="217" fill="#27ae60" />
+                <rect x="220" y="69" width="40" height="64" fill="#e67e22" />
+                <rect x="220" y="50" width="40" height="19" fill="#c0392b" />
+                <text x="240" y="370" text-anchor="middle" font-size="10" transform="rotate(45, 240, 370)" fill="#666">Meunier 3</text>
+                <text x="240" y="241" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">72%</text>
+            </g>
+
+            <!-- Bureau 1041 - Paul Bert 1 -->
+            <g>
+                <rect x="290" y="91" width="40" height="259" fill="#27ae60" />
+                <rect x="290" y="60" width="40" height="31" fill="#e67e22" />
+                <rect x="290" y="50" width="40" height="10" fill="#c0392b" />
+                <text x="310" y="370" text-anchor="middle" font-size="10" transform="rotate(45, 310, 370)" fill="#666">Paul Bert 1</text>
+                <text x="310" y="220" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">86%</text>
+            </g>
+
+            <!-- Bureau 1043 - Paul Bert 3 -->
+            <g>
+                <rect x="360" y="97" width="40" height="253" fill="#27ae60" />
+                <rect x="360" y="58" width="40" height="39" fill="#e67e22" />
+                <rect x="360" y="50" width="40" height="8" fill="#c0392b" />
+                <text x="380" y="370" text-anchor="middle" font-size="10" transform="rotate(45, 380, 370)" fill="#666">Paul Bert 3</text>
+                <text x="380" y="223" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">84%</text>
+            </g>
+
+            <!-- Bureau 1063 - Menuts 3 -->
+            <g>
+                <rect x="430" y="88" width="40" height="262" fill="#27ae60" />
+                <rect x="430" y="60" width="40" height="28" fill="#e67e22" />
+                <rect x="430" y="50" width="40" height="10" fill="#c0392b" />
+                <text x="450" y="370" text-anchor="middle" font-size="10" transform="rotate(45, 450, 370)" fill="#666">Menuts 3</text>
+                <text x="450" y="219" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">87%</text>
+            </g>
+        </svg>
+    </div>
+</body>
+</html>
