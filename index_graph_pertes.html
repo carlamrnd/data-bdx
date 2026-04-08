@@ -2,25 +2,25 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>Classement des pertes de voix - Bordeaux 2026</title>
+    <title>Top 15 Pertes de voix - Bordeaux 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
-        body { font-family: -apple-system, system-ui, sans-serif; padding: 30px; background: #fff; }
-        .container { max-width: 900px; margin: auto; }
-        h2 { text-align: left; color: #111; font-size: 22px; margin-bottom: 5px; }
-        p { text-align: left; color: #666; font-size: 14px; margin-bottom: 30px; }
+        body { font-family: -apple-system, system-ui, sans-serif; padding: 15px; background: #fff; overflow: hidden; }
+        .container { max-width: 800px; margin: auto; height: 420px; }
+        h2 { text-align: left; color: #111; font-size: 20px; margin: 0 0 5px 0; }
+        p { text-align: left; color: #666; font-size: 13px; margin: 0 0 20px 0; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Où la gauche a-t-elle perdu le plus de voix ?</h2>
-        <p>Bureaux de vote classés par nombre de voix de gauche "perdues" entre le 1er et le 2nd tour.</p>
-        <canvas id="rankingChart" height="500"></canvas>
+        <h2>Top 15 des bureaux où la gauche a le plus reculé</h2>
+        <p>Nombre de voix manquantes entre le potentiel du 1er tour et le résultat de Pierre Hurmic (T2).</p>
+        <canvas id="rankingChart"></canvas>
     </div>
 
     <script>
-        const rawData = [{"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}];
+        const rawData = [{"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%"}, {"bureau": "4163", "perte": 35, "t1": "0", "t2": "138", "report": "79,77%"}, {"bureau": "5045", "perte": 32, "t1": "0", "t2": "367", "report": "91,98%"}, {"bureau": "4161", "perte": 30, "t1": "0", "t2": "205", "report": "87,23%"}, {"bureau": "4162", "perte": 26, "t1": "0", "t2": "231", "report": "89,88%"}, {"bureau": "4121", "perte": 22, "t1": "0", "t2": "126", "report": "85,14%"}, {"bureau": "5084", "perte": 20, "t1": "0", "t2": "268", "report": "93,06%"}, {"bureau": "1061", "perte": 17, "t1": "0", "t2": "480", "report": "96,58%"}, {"bureau": "5002", "perte": 17, "t1": "0", "t2": "569", "report": "97,10%"}, {"bureau": "5001", "perte": 16, "t1": "0", "t2": "428", "report": "96,40%"}, {"bureau": "1022", "perte": 15, "t1": "0", "t2": "270", "report": "94,74%"}, {"bureau": "1021", "perte": 14, "t1": "0", "t2": "273", "report": "95,12%"}, {"bureau": "5005", "perte": 13, "t1": "0", "t2": "185", "report": "93,43%"}, {"bureau": "4182", "perte": 12, "t1": "0", "t2": "184", "report": "93,88%"}, {"bureau": "4141", "perte": 12, "t1": "0", "t2": "255", "report": "95,51%"}];
         Chart.register(ChartDataLabels);
 
         const ctx = document.getElementById('rankingChart').getContext('2d');
@@ -29,12 +29,10 @@
             data: {
                 labels: rawData.map(d => "Bureau " + d.bureau),
                 datasets: [{
-                    label: 'Voix manquantes',
                     data: rawData.map(d => d.perte),
-                    backgroundColor: '#f97316', // Orange vif
-                    hoverBackgroundColor: '#ea580c',
-                    borderRadius: 4,
-                    barThickness: 20
+                    backgroundColor: '#e63946', // Rouge franc pour la perte
+                    borderRadius: 3,
+                    barThickness: 18
                 }]
             },
             options: {
@@ -44,16 +42,16 @@
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-                        padding: 12,
+                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                        padding: 10,
                         callbacks: {
-                            label: function(context) {
-                                const d = rawData[context.dataIndex];
+                            label: (ctx) => {
+                                const d = rawData[ctx.dataIndex];
                                 return [
-                                    "Perte : " + d.perte + " voix",
-                                    "Potentiel T1 : " + d.t1 + " voix",
-                                    "Score Hurmic T2 : " + d.t2 + " voix",
-                                    "Taux de report : " + d.report
+                                    "Voix manquantes : " + d.perte,
+                                    "Potentiel T1 : " + d.t1,
+                                    "Réel T2 : " + d.t2,
+                                    "Report : " + d.report
                                 ];
                             }
                         }
@@ -61,22 +59,24 @@
                     datalabels: {
                         anchor: 'end',
                         align: 'right',
-                        color: '#444',
-                        font: { weight: 'bold' },
-                        formatter: (val) => val
+                        color: '#111',
+                        font: { weight: 'bold', size: 11 },
+                        offset: 4,
+                        formatter: (val) => val + " voix"
                     }
                 },
                 scales: {
                     x: { 
                         beginAtZero: true,
-                        grid: { color: '#f3f4f6' },
-                        title: { display: true, text: 'Nombre de voix manquantes' }
+                        display: false, // On cache l'axe X pour épurer car les valeurs sont sur les barres
+                        grid: { display: false }
                     },
                     y: { 
                         grid: { display: false },
-                        ticks: { font: { size: 12, weight: '500' } }
+                        ticks: { font: { size: 11, weight: '600' } }
                     }
-                }
+                },
+                layout: { padding: { right: 50 } }
             }
         });
     </script>
