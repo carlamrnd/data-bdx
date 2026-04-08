@@ -6,7 +6,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
-        body { font-family: -apple-system, system-ui, sans-serif; padding: 15px; background: #fff; overflow: hidden; }
+        body { font-family: -apple-system, system-ui, sans-serif; padding: 15px; background: #fff; }
         .container { max-width: 800px; margin: auto; height: 420px; }
         h2 { text-align: left; color: #111; font-size: 20px; margin: 0 0 5px 0; }
         p { text-align: left; color: #666; font-size: 13px; margin: 0 0 20px 0; }
@@ -20,7 +20,7 @@
     </div>
 
     <script>
-        const rawData = [{"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%"}, {"bureau": "4163", "perte": 35, "t1": "0", "t2": "138", "report": "79,77%"}, {"bureau": "5045", "perte": 32, "t1": "0", "t2": "367", "report": "91,98%"}, {"bureau": "4161", "perte": 30, "t1": "0", "t2": "205", "report": "87,23%"}, {"bureau": "4162", "perte": 26, "t1": "0", "t2": "231", "report": "89,88%"}, {"bureau": "4121", "perte": 22, "t1": "0", "t2": "126", "report": "85,14%"}, {"bureau": "5084", "perte": 20, "t1": "0", "t2": "268", "report": "93,06%"}, {"bureau": "1061", "perte": 17, "t1": "0", "t2": "480", "report": "96,58%"}, {"bureau": "5002", "perte": 17, "t1": "0", "t2": "569", "report": "97,10%"}, {"bureau": "5001", "perte": 16, "t1": "0", "t2": "428", "report": "96,40%"}, {"bureau": "1022", "perte": 15, "t1": "0", "t2": "270", "report": "94,74%"}, {"bureau": "1021", "perte": 14, "t1": "0", "t2": "273", "report": "95,12%"}, {"bureau": "5005", "perte": 13, "t1": "0", "t2": "185", "report": "93,43%"}, {"bureau": "4182", "perte": 12, "t1": "0", "t2": "184", "report": "93,88%"}, {"bureau": "4141", "perte": 12, "t1": "0", "t2": "255", "report": "95,51%"}];
+        const rawData = [{"bureau": "4163", "perte": -38, "t1": 100, "t2": 138, "report": "79,77%"}, {"bureau": "4161", "perte": -53, "t1": 152, "t2": 205, "report": "87,23%"}, {"bureau": "4182", "perte": -58, "t1": 126, "t2": 184, "report": "93,88%"}, {"bureau": "4121", "perte": -67, "t1": 59, "t2": 126, "report": "85,14%"}, {"bureau": "4162", "perte": -81, "t1": 150, "t2": 231, "report": "89,88%"}, {"bureau": "5005", "perte": -98, "t1": 87, "t2": 185, "report": "93,43%"}, {"bureau": "1022", "perte": -103, "t1": 167, "t2": 270, "report": "94,74%"}, {"bureau": "4141", "perte": -113, "t1": 142, "t2": 255, "report": "95,51%"}, {"bureau": "5084", "perte": -114, "t1": 154, "t2": 268, "report": "93,06%"}, {"bureau": "5045", "perte": -123, "t1": 244, "t2": 367, "report": "91,98%"}, {"bureau": "1021", "perte": -125, "t1": 148, "t2": 273, "report": "95,12%"}, {"bureau": "5001", "perte": -222, "t1": 206, "t2": 428, "report": "96,40%"}, {"bureau": "5003", "perte": -238, "t1": 185, "t2": 423, "report": "91,96%"}, {"bureau": "5002", "perte": -240, "t1": 329, "t2": 569, "report": "97,10%"}, {"bureau": "1061", "perte": -259, "t1": 221, "t2": 480, "report": "96,58%"}];
         Chart.register(ChartDataLabels);
 
         const ctx = document.getElementById('rankingChart').getContext('2d');
@@ -30,7 +30,7 @@
                 labels: rawData.map(d => "Bureau " + d.bureau),
                 datasets: [{
                     data: rawData.map(d => d.perte),
-                    backgroundColor: '#e63946', // Rouge franc pour la perte
+                    backgroundColor: '#e63946',
                     borderRadius: 3,
                     barThickness: 18
                 }]
@@ -68,7 +68,7 @@
                 scales: {
                     x: { 
                         beginAtZero: true,
-                        display: false, // On cache l'axe X pour épurer car les valeurs sont sur les barres
+                        display: false,
                         grid: { display: false }
                     },
                     y: { 
