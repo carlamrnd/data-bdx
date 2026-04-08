@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Comparaison T1/T2 - Bordeaux 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: -apple-system, sans-serif; padding: 20px; background: #f9fafb; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        h2 { text-align: center; color: #111827; margin-bottom: 5px; }
+        p { text-align: center; color: #6b7280; font-size: 14px; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Potentiel de Gauche vs Score Réel Hurmic</h2>
+        <p>Comparaison entre le total des voix de gauche au 1er tour et le résultat de Pierre Hurmic au 2nd tour.</p>
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        const rawData = [{"bureau": "5003", "quartier": "Faire Gagner Bordeaux", "t1": 460, "t2": 423, "manquantes": 37, "report": "91,96%", "part_t1": "47,47 %"}, {"bureau": "5001", "quartier": "Faire Gagner Bordeaux", "t1": 444, "t2": 428, "manquantes": 16, "report": "96,40%", "part_t1": "46,72 %"}, {"bureau": "1062", "quartier": "Faire Gagner Bordeaux", "t1": 511, "t2": 500, "manquantes": 11, "report": "97,85%", "part_t1": "53,26 %"}, {"bureau": "1063", "quartier": "Faire Gagner Bordeaux", "t1": 492, "t2": 504, "manquantes": -12, "report": "102,44%", "part_t1": "54,56 %"}, {"bureau": "1043", "quartier": "Faire Gagner Bordeaux", "t1": 423, "t2": 435, "manquantes": -12, "report": "102,84%", "part_t1": "55,64 %"}, {"bureau": "5082", "quartier": "Faire Gagner Bordeaux", "t1": 305, "t2": 316, "manquantes": -11, "report": "103,61%", "part_t1": "49,23 %"}];
+        
+        const ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: rawData.map(d => "BV " + d.bureau),
+                datasets: [
+                    {
+                        label: 'Potentiel Gauche (T1)',
+                        data: rawData.map(d => d.t1),
+                        backgroundColor: '#d1d5db',
+                        borderRadius: 4,
+                        categoryPercentage: 0.8,
+                        barPercentage: 0.9
+                    },
+                    {
+                        label: 'Pierre Hurmic (T2)',
+                        data: rawData.map(d => d.t2),
+                        backgroundColor: '#10b981',
+                        borderRadius: 4,
+                        categoryPercentage: 0.8,
+                        barPercentage: 0.9
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top', align: 'end' },
+                    tooltip: {
+                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                        padding: 15,
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        callbacks: {
+                            afterBody: function(context) {
+                                const index = context[0].dataIndex;
+                                const d = rawData[index];
+                                return [
+                                    '',
+                                    'Quartier : ' + d.quartier,
+                                    'Voix manquantes : ' + d.manquantes,
+                                    'Taux de report : ' + d.report,
+                                    'Part. T1 : ' + d.part_t1
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        title: { display: true, text: 'Nombre de voix' },
+                        grid: { color: '#f3f4f6' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { weight: '500' } }
+                    }
+                },
+                animation: { duration: 1500, easing: 'easeInOutQuart' }
+            }
+        });
+    </script>
+</body>
+</html>
