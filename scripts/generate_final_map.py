@@ -14,7 +14,7 @@ with open('data/20 bastions.csv', mode='r', encoding='utf-8') as f:
         nom_bur = row[1].strip()
         cat_raw = row[2].strip().lower()
         
-        # Correction des noms de catégories
+        # Renommage des catégories avec Majuscules
         if 'exemplaire' in cat_raw or 'mobilisé' in cat_raw:
             cat = "Bastion mobilisé"
         elif 'démobilisé' in cat_raw:
@@ -22,17 +22,13 @@ with open('data/20 bastions.csv', mode='r', encoding='utf-8') as f:
         else:
             cat = "Bastion historique"
         
-        # Nettoyage des scores
-        def clean_score(val):
-            try:
-                return val.strip() # On garde le texte tel quel pour l'affichage précis
-            except:
-                return "0,00 %"
+        # Scores T1 : Hurmic, Raymond, Poutou
+        hurmic_t1 = row[4].strip()
+        raymond_t1 = row[6].strip()
+        poutou_t1 = row[8].strip()
         
-        hurmic_t1 = clean_score(row[4])
-        raymond_t1 = clean_score(row[6])
-        poutou_t1 = clean_score(row[8])
-        gauche_t2 = clean_score(row[10])
+        # Score T2 : Hurmic
+        gauche_t2 = row[10].strip()
         
         bastions_data[num_bur] = {
             'name': nom_bur,
@@ -45,14 +41,12 @@ with open('data/20 bastions.csv', mode='r', encoding='utf-8') as f:
 
 # 2. Extraire le GeoJSON de source_map.html
 with open('sources/source_map.html', 'r', encoding='utf-8') as f:
-    for line in f:
-        if 'const GEOJSON =' in line:
-            match = re.search(r'const GEOJSON = (\{.*\});', line)
-            if match:
-                full_geojson = json.loads(match.group(1))
-                break
+    content = f.read()
+    match = re.search(r'const GEOJSON = (\{.*?\});', content, re.DOTALL)
+    if match:
+        full_geojson = json.loads(match.group(1))
     else:
-        raise Exception("GeoJSON non trouvé")
+        raise Exception("GeoJSON non trouvé dans sources/source_map.html")
 
 # 3. Filtrer et enrichir le GeoJSON
 filtered_features = []
@@ -60,9 +54,15 @@ for feature in full_geojson['features']:
     code = str(feature['properties']['code'])
     if code in bastions_data:
         data = bastions_data[code]
-        feature['properties'].update(data)
+        # On remplace les propriétés par nos données enrichies
+        feature['properties']['name'] = data['name']
+        feature['properties']['cat'] = data['cat']
+        feature['properties']['hurmic_t1'] = data['hurmic_t1']
+        feature['properties']['raymond_t1'] = data['raymond_t1']
+        feature['properties']['poutou_t1'] = data['poutou_t1']
+        feature['properties']['score_t2'] = data['score_t2']
         
-        # Définir la couleur
+        # Définir la couleur persistante
         if data['cat'] == "Bastion démobilisé":
             feature['properties']['color'] = '#FF69B4' # Rose
         elif data['cat'] == "Bastion mobilisé":
@@ -74,7 +74,7 @@ for feature in full_geojson['features']:
 
 full_geojson['features'] = filtered_features
 
-# 4. Générer le fichier HTML final (index.html)
+# 4. Générer le fichier HTML final
 html_template = f"""
 <!DOCTYPE html>
 <html>
@@ -174,4 +174,4 @@ html_template = f"""
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html_template)
 
-print("Mise à jour de index.html terminée.")
+print("index.html mis à jour avec succès.")
