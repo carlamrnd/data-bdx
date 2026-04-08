@@ -14,20 +14,18 @@ with open('data/20 bastions.csv', mode='r', encoding='utf-8') as f:
         nom_bur = row[1].strip()
         cat_raw = row[2].strip().lower()
         
-        # Renommage des catégories avec Majuscules
-        if 'exemplaire' in cat_raw or 'mobilisé' in cat_raw:
-            cat = "Bastion mobilisé"
-        elif 'démobilisé' in cat_raw:
+        # Attribution stricte des catégories
+        if num_bur in ['1062', '5001', '5003']:
             cat = "Bastion démobilisé"
+        elif 'exemplaire' in cat_raw or 'mobilisé' in cat_raw:
+            cat = "Bastion mobilisé"
         else:
             cat = "Bastion historique"
         
-        # Scores T1 : Hurmic, Raymond, Poutou
+        # Scores
         hurmic_t1 = row[4].strip()
         raymond_t1 = row[6].strip()
         poutou_t1 = row[8].strip()
-        
-        # Score T2 : Hurmic
         gauche_t2 = row[10].strip()
         
         bastions_data[num_bur] = {
@@ -46,7 +44,7 @@ with open('sources/source_map.html', 'r', encoding='utf-8') as f:
     if match:
         full_geojson = json.loads(match.group(1))
     else:
-        raise Exception("GeoJSON non trouvé dans sources/source_map.html")
+        raise Exception("GeoJSON non trouvé")
 
 # 3. Filtrer et enrichir le GeoJSON
 filtered_features = []
@@ -54,13 +52,7 @@ for feature in full_geojson['features']:
     code = str(feature['properties']['code'])
     if code in bastions_data:
         data = bastions_data[code]
-        # On remplace les propriétés par nos données enrichies
-        feature['properties']['name'] = data['name']
-        feature['properties']['cat'] = data['cat']
-        feature['properties']['hurmic_t1'] = data['hurmic_t1']
-        feature['properties']['raymond_t1'] = data['raymond_t1']
-        feature['properties']['poutou_t1'] = data['poutou_t1']
-        feature['properties']['score_t2'] = data['score_t2']
+        feature['properties'].update(data)
         
         # Définir la couleur persistante
         if data['cat'] == "Bastion démobilisé":
@@ -74,7 +66,7 @@ for feature in full_geojson['features']:
 
 full_geojson['features'] = filtered_features
 
-# 4. Générer le fichier HTML final
+# 4. Générer le fichier HTML final (avec balises anti-cache)
 html_template = f"""
 <!DOCTYPE html>
 <html>
@@ -82,6 +74,11 @@ html_template = f"""
     <title>Bastions de Gauche - Bordeaux 2026</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Balises pour forcer le rafraîchissement du cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
@@ -174,4 +171,4 @@ html_template = f"""
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html_template)
 
-print("index.html mis à jour avec succès.")
+print("Mise à jour terminée avec succès.")
