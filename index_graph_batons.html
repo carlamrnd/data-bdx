@@ -4,97 +4,80 @@
 <head>
     <title>Comparaison T1/T2 - Bordeaux 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Plugin pour afficher les valeurs sur les barres -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
         body { font-family: -apple-system, system-ui, sans-serif; padding: 20px; background: #fff; }
-        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; }
-        h2 { text-align: center; color: #111; font-size: 24px; margin-bottom: 5px; }
-        p { text-align: center; color: #666; font-size: 15px; margin-bottom: 40px; }
-        .legend-custom { display: flex; justify-content: center; gap: 25px; font-size: 13px; margin-bottom: 20px; font-weight: 500; }
-        .leg-item { display: flex; align-items: center; gap: 8px; }
-        .dot { width: 14px; height: 14px; border-radius: 2px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; border: 1px solid #eee; }
+        h2 { text-align: center; color: #111; font-size: 22px; margin-bottom: 5px; }
+        p { text-align: center; color: #666; font-size: 14px; margin-bottom: 35px; }
+        .legend-custom { display: flex; justify-content: center; gap: 20px; font-size: 12px; margin-bottom: 20px; color: #444; }
+        .leg-item { display: flex; align-items: center; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 2px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Performance de Pierre Hurmic par bureau</h2>
-        <p>Visualisation du report de voix : le score réel (couleur) comparé au potentiel maximum de gauche (gris).</p>
+        <h2>Comparaison Potentiel vs Réel</h2>
+        <p>Différence entre le réservoir de voix de gauche (T1) et le score de Pierre Hurmic (T2).</p>
         
         <div class="legend-custom">
             <div class="leg-item"><div class="dot" style="background:#9ca3af"></div> Potentiel Gauche (T1)</div>
             <div class="leg-item"><div class="dot" style="background:#10b981"></div> Mobilisation réussie (T2)</div>
-            <div class="leg-item"><div class="dot" style="background:#ef4444"></div> Perte de voix / Démobilisation (T2)</div>
+            <div class="leg-item"><div class="dot" style="background:#ef4444"></div> Perte de voix (T2)</div>
         </div>
 
-        <canvas id="myChart" height="450"></canvas>
+        <canvas id="myChart"></canvas>
     </div>
 
     <script>
         const rawData = [{"bureau": "5003", "t1": 460, "t2": 423, "color": "#ef4444", "manquantes": 37, "perte": true, "report": "91,96%"}, {"bureau": "5001", "t1": 444, "t2": 428, "color": "#ef4444", "manquantes": 16, "perte": true, "report": "96,40%"}, {"bureau": "1062", "t1": 511, "t2": 500, "color": "#ef4444", "manquantes": 11, "perte": true, "report": "97,85%"}, {"bureau": "1063", "t1": 492, "t2": 504, "color": "#10b981", "manquantes": 12, "perte": false, "report": "102,44%"}, {"bureau": "1043", "t1": 423, "t2": 435, "color": "#10b981", "manquantes": 12, "perte": false, "report": "102,84%"}, {"bureau": "5082", "t1": 305, "t2": 316, "color": "#10b981", "manquantes": 11, "perte": false, "report": "103,61%"}];
-        Chart.register(ChartDataLabels);
         
         const ctx = document.getElementById('myChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: rawData.map(d => "Bureau " + d.bureau),
+                labels: rawData.map(d => "Bureau de vote " + d.bureau),
                 datasets: [
-                    {
-                        label: 'Réel Hurmic (T2)',
-                        data: rawData.map(d => d.t2),
-                        backgroundColor: rawData.map(d => d.color),
-                        borderRadius: 4,
-                        barPercentage: 0.5, // Plus fine
-                        categoryPercentage: 0.8,
-                        order: 1, // Devant
-                        datalabels: {
-                            color: '#000',
-                            anchor: 'end',
-                            align: 'top',
-                            offset: 5,
-                            font: { weight: 'bold', size: 11 }
-                        }
-                    },
                     {
                         label: 'Potentiel Gauche (T1)',
                         data: rawData.map(d => d.t1),
                         backgroundColor: '#9ca3af', // Gris foncé
-                        borderRadius: 4,
-                        barPercentage: 0.9, // Plus large
+                        borderRadius: 2,
                         categoryPercentage: 0.8,
-                        order: 2, // Derrière
-                        datalabels: { display: false } // On ne surcharge pas avec le T1
+                        barPercentage: 0.9
+                    },
+                    {
+                        label: 'Pierre Hurmic (T2)',
+                        data: rawData.map(d => d.t2),
+                        backgroundColor: rawData.map(d => d.color),
+                        borderRadius: 2,
+                        categoryPercentage: 0.8,
+                        barPercentage: 0.9
                     }
                 ]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
-                layout: { padding: { top: 30 } },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.85)',
                         padding: 12,
                         callbacks: {
                             title: (items) => "Bureau de vote " + rawData[items[0].dataIndex].bureau,
                             label: function(context) {
                                 const d = rawData[context.dataIndex];
-                                if (context.datasetIndex === 1) return "Potentiel T1 : " + d.t1 + " voix";
+                                if (context.datasetIndex === 0) return "Potentiel T1 : " + d.t1 + " voix";
                                 return "Réel Hurmic T2 : " + d.t2 + " voix";
                             },
                             afterBody: function(context) {
                                 const d = rawData[context[0].dataIndex];
-                                const diff = d.t2 - d.t1;
-                                const label = diff >= 0 ? "Gain : +" + diff : "Perte : " + diff;
-                                return ['', label + " voix", 'Taux de report : ' + d.report];
+                                const labelDiff = d.perte ? "Voix perdues : " : "Voix gagnées : ";
+                                return [
+                                    '',
+                                    labelDiff + d.manquantes,
+                                    'Taux de report : ' + d.report
+                                ];
                             }
-                        }
-                    },
-                    datalabels: {
-                        formatter: function(value, context) {
-                            return value;
                         }
                     }
                 },
@@ -102,12 +85,11 @@
                     y: { 
                         beginAtZero: true,
                         title: { display: true, text: 'Nombre de voix', font: { weight: 'bold' } },
-                        grid: { color: '#f3f4f6' }
+                        grid: { color: '#f9f9f9' }
                     },
                     x: {
-                        stacked: true, // Superposition forcée
                         grid: { display: false },
-                        ticks: { font: { size: 11, weight: '500' } }
+                        ticks: { font: { size: 10 } }
                     }
                 }
             }
