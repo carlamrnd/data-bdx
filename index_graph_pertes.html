@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Classement des pertes de voix - Bordeaux 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        body { font-family: -apple-system, system-ui, sans-serif; padding: 30px; background: #fff; }
+        .container { max-width: 900px; margin: auto; }
+        h2 { text-align: left; color: #111; font-size: 22px; margin-bottom: 5px; }
+        p { text-align: left; color: #666; font-size: 14px; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Où la gauche a-t-elle perdu le plus de voix ?</h2>
+        <p>Bureaux de vote classés par nombre de voix de gauche "perdues" entre le 1er et le 2nd tour.</p>
+        <canvas id="rankingChart" height="500"></canvas>
+    </div>
+
+    <script>
+        const rawData = [{"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}, {"bureau": "5003", "perte": 37, "t1": "0", "t2": "423", "report": "91,96%", "abstention": "55"}];
+        Chart.register(ChartDataLabels);
+
+        const ctx = document.getElementById('rankingChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: rawData.map(d => "Bureau " + d.bureau),
+                datasets: [{
+                    label: 'Voix manquantes',
+                    data: rawData.map(d => d.perte),
+                    backgroundColor: '#f97316', // Orange vif
+                    hoverBackgroundColor: '#ea580c',
+                    borderRadius: 4,
+                    barThickness: 20
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                const d = rawData[context.dataIndex];
+                                return [
+                                    "Perte : " + d.perte + " voix",
+                                    "Potentiel T1 : " + d.t1 + " voix",
+                                    "Score Hurmic T2 : " + d.t2 + " voix",
+                                    "Taux de report : " + d.report
+                                ];
+                            }
+                        }
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'right',
+                        color: '#444',
+                        font: { weight: 'bold' },
+                        formatter: (val) => val
+                    }
+                },
+                scales: {
+                    x: { 
+                        beginAtZero: true,
+                        grid: { color: '#f3f4f6' },
+                        title: { display: true, text: 'Nombre de voix manquantes' }
+                    },
+                    y: { 
+                        grid: { display: false },
+                        ticks: { font: { size: 12, weight: '500' } }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
