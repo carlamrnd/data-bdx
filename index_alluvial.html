@@ -3,102 +3,95 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Flux Électoral Alluvial - Bordeaux</title>
+    <title>Flux Électoral Bordeaux - 2020-2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; background: #fff; }
-        .container { max-width: 1000px; margin: auto; height: 600px; padding: 10px; }
-        h2 { text-align: left; color: #111; font-size: 26px; margin-bottom: 5px; letter-spacing: -0.5px; }
-        p { text-align: left; color: #666; font-size: 15px; margin-bottom: 30px; }
-        .legend-custom { display: flex; gap: 25px; font-size: 13px; margin-bottom: 15px; font-weight: 700; text-transform: uppercase; }
-        .leg-item { display: flex; align-items: center; gap: 8px; }
-        .dot { width: 16px; height: 16px; border-radius: 4px; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; padding: 20px; background: #fff; }
+        .container { max-width: 1100px; margin: auto; height: 600px; padding: 10px; position: relative; }
+        h2 { text-align: left; color: #111; font-size: 24px; margin-bottom: 5px; }
+        p { text-align: left; color: #666; font-size: 14px; margin-bottom: 40px; }
+        
+        /* Étiquettes personnalisées pour l'axe Y */
+        .y-labels {
+            position: absolute;
+            left: -10px;
+            top: 100px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 12px;
+            color: #444;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .y-label { background: rgba(255,255,255,0.8); padding: 2px 5px; border-radius: 3px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Trajectoire des voix (2020 - 2026)</h2>
-        <p>L'épaisseur de chaque flux illustre le volume de voix obtenu. Les blocs restent segmentés par famille politique.</p>
+        <h2>Trajectoire des voix et dynamique des blocs</h2>
+        <p>L'épaisseur de chaque flux représente le volume de voix. La participation est indiquée sous chaque scrutin.</p>
         
-        <div class="legend-custom">
-            <div class="leg-item"><div class="dot" style="background:#d62828"></div> Extrême Gauche</div>
-            <div class="leg-item"><div class="dot" style="background:#f72585"></div> Gauche</div>
-            <div class="leg-item"><div class="dot" style="background:#f8961e"></div> Autres</div>
-            <div class="leg-item" style="color:#9ca3af; font-weight:normal;">—— Participation (%)</div>
+        <div class="y-labels">
+            <div class="y-label" style="color: #d62828;">EXTRÊME GAUCHE</div>
+            <div class="y-label" style="color: #f72585;">GAUCHE</div>
+            <div class="y-label" style="color: #f8961e;">AUTRES</div>
         </div>
 
         <canvas id="alluvialChart"></canvas>
     </div>
 
     <script>
-        const rawData = {"labels": ["Municipales 2020 T1", "Municipales 2020 T2", "Pr\u00e9sidentielle 2022 T1", "L\u00e9gislatives 2022 T1", "L\u00e9gislatives 2022 T2", "L\u00e9gislatives 2024 T1", "L\u00e9gislatives 2024 T2", "Municipales 2026 T1", "Municipales 2026 T2"], "ext_gauche": [295, 227, 1328, 30, 0, 26, 0, 804, 0], "gauche": [472, 616, 258, 1136, 1193, 1648, 1699, 611, 1351], "autre": [294, 190, 726, 411, 328, 561, 474, 481, 431], "participation": ["35", "35", "71", "48", "47", "66", "64", "52", "49"]};
-        
         const ctx = document.getElementById('alluvialChart').getContext('2d');
+        
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: rawData.labels,
+                labels: [["Municipales 2020 T1", "Part. 35%"], ["Municipales 2020 T2", "Part. 35%"], ["Pr\u00e9sidentielle 2022 T1", "Part. 71%"], ["L\u00e9gislatives 2022 T1", "Part. 48%"], ["L\u00e9gislatives 2022 T2", "Part. 47%"], ["L\u00e9gislatives 2024 T1", "Part. 66%"], ["L\u00e9gislatives 2024 T2", "Part. 64%"], ["Municipales 2026 T1", "Part. 52%"], ["Municipales 2026 T2", "Part. 49%"]],
                 datasets: [
                     {
                         label: 'Autres',
-                        data: rawData.autre,
+                        data: [294, 190, 726, 411, 328, 561, 474, 481, 431],
                         backgroundColor: '#f8961e',
-                        borderColor: 'transparent',
                         fill: true,
-                        tension: 0.5, // Courbes alluviales fluides
+                        tension: 0.4,
                         pointRadius: 0,
                         stack: 'combined'
                     },
                     {
                         label: 'Gauche',
-                        data: rawData.gauche,
+                        data: [472, 616, 258, 1136, 1193, 1648, 1699, 611, 1351],
                         backgroundColor: '#f72585',
-                        borderColor: 'transparent',
                         fill: true,
-                        tension: 0.5,
+                        tension: 0.4,
                         pointRadius: 0,
                         stack: 'combined'
                     },
                     {
                         label: 'Extrême Gauche',
-                        data: rawData.ext_gauche,
+                        data: [295, 227, 1328, 30, 0, 26, 0, 804, 0],
                         backgroundColor: '#d62828',
-                        borderColor: 'transparent',
                         fill: true,
-                        tension: 0.5,
+                        tension: 0.4,
                         pointRadius: 0,
                         stack: 'combined'
-                    },
-                    {
-                        label: 'Participation (%)',
-                        data: rawData.participation,
-                        borderColor: '#9ca3af',
-                        borderWidth: 2,
-                        borderDash: [4, 4],
-                        fill: false,
-                        yAxisID: 'y1',
-                        pointRadius: 4,
-                        pointBackgroundColor: '#fff',
-                        tension: 0.3
                     }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(17, 24, 39, 0.95)',
-                        titleFont: { size: 14, weight: 'bold' },
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0,0,0,0.9)',
                         padding: 12,
-                        bodySpacing: 8,
                         callbacks: {
-                            label: function(context) {
-                                if (context.datasetIndex === 3) return "PARTICIPATION : " + context.parsed.y + "%";
-                                return context.dataset.label.toUpperCase() + " : " + context.raw + " voix";
-                            }
+                            label: (ctx) => ctx.dataset.label + " : " + ctx.raw + " voix"
                         }
                     }
                 },
@@ -106,22 +99,22 @@
                     y: {
                         stacked: true,
                         beginAtZero: true,
-                        grid: { color: '#f3f4f6' },
-                        title: { display: true, text: 'VOIX CUMULÉES', font: { weight: 'bold' } }
-                    },
-                    y1: {
-                        position: 'right',
-                        max: 100,
-                        grid: { display: false },
-                        title: { display: true, text: 'PARTICIPATION %', font: { weight: 'bold' } }
+                        ticks: { display: false }, // On cache les chiffres
+                        grid: { color: '#f9f9f9' }
                     },
                     x: {
                         grid: { 
                             color: 'rgba(0,0,0,0.05)', 
-                            lineWidth: 3 // Segmentation verticale marquée
+                            lineWidth: 2 
                         },
-                        ticks: { font: { weight: 'bold', size: 10 } }
+                        ticks: { 
+                            font: { size: 10, weight: 'bold' },
+                            padding: 10
+                        }
                     }
+                },
+                layout: {
+                    padding: { left: 80, right: 20 }
                 }
             }
         });
