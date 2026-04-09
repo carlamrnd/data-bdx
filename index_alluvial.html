@@ -3,28 +3,28 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Flux des votes - Bordeaux 2020-2026</title>
+    <title>Flux Électoral Alluvial - Bordeaux</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: -apple-system, system-ui, sans-serif; padding: 20px; background: #fff; }
-        .container { max-width: 1000px; margin: auto; height: 550px; padding: 20px; }
-        h2 { text-align: left; color: #111; font-size: 24px; margin-bottom: 5px; }
-        p { text-align: left; color: #666; font-size: 14px; margin-bottom: 30px; }
-        .legend-custom { display: flex; gap: 20px; font-size: 13px; margin-bottom: 10px; font-weight: 600; }
-        .leg-item { display: flex; align-items: center; gap: 6px; }
-        .dot { width: 14px; height: 14px; border-radius: 3px; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; background: #fff; }
+        .container { max-width: 1000px; margin: auto; height: 600px; padding: 10px; }
+        h2 { text-align: left; color: #111; font-size: 26px; margin-bottom: 5px; letter-spacing: -0.5px; }
+        p { text-align: left; color: #666; font-size: 15px; margin-bottom: 30px; }
+        .legend-custom { display: flex; gap: 25px; font-size: 13px; margin-bottom: 15px; font-weight: 700; text-transform: uppercase; }
+        .leg-item { display: flex; align-items: center; gap: 8px; }
+        .dot { width: 16px; height: 16px; border-radius: 4px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Flux électoral : Évolution des blocs (2020-2026)</h2>
-        <p>L'épaisseur des courbes représente le nombre de voix. Les blocs restent superposés par famille politique.</p>
+        <h2>Trajectoire des voix (2020 - 2026)</h2>
+        <p>L'épaisseur de chaque flux illustre le volume de voix obtenu. Les blocs restent segmentés par famille politique.</p>
         
         <div class="legend-custom">
-            <div class="leg-item"><div class="dot" style="background:#e63946"></div> Extrême Gauche</div>
-            <div class="leg-item"><div class="dot" style="background:#ff69b4"></div> Gauche</div>
-            <div class="leg-item"><div class="dot" style="background:#f97316"></div> Autres</div>
-            <div class="leg-item"><div class="dot" style="background:#9ca3af; border: 1px dashed #666;"></div> Participation (%)</div>
+            <div class="leg-item"><div class="dot" style="background:#d62828"></div> Extrême Gauche</div>
+            <div class="leg-item"><div class="dot" style="background:#f72585"></div> Gauche</div>
+            <div class="leg-item"><div class="dot" style="background:#f8961e"></div> Autres</div>
+            <div class="leg-item" style="color:#9ca3af; font-weight:normal;">—— Participation (%)</div>
         </div>
 
         <canvas id="alluvialChart"></canvas>
@@ -42,30 +42,30 @@
                     {
                         label: 'Autres',
                         data: rawData.autre,
+                        backgroundColor: '#f8961e',
                         borderColor: 'transparent',
-                        backgroundColor: '#f97316',
                         fill: true,
-                        tension: 0.4,
+                        tension: 0.5, // Courbes alluviales fluides
                         pointRadius: 0,
                         stack: 'combined'
                     },
                     {
                         label: 'Gauche',
                         data: rawData.gauche,
+                        backgroundColor: '#f72585',
                         borderColor: 'transparent',
-                        backgroundColor: '#ff69b4',
                         fill: true,
-                        tension: 0.4,
+                        tension: 0.5,
                         pointRadius: 0,
                         stack: 'combined'
                     },
                     {
                         label: 'Extrême Gauche',
                         data: rawData.ext_gauche,
+                        backgroundColor: '#d62828',
                         borderColor: 'transparent',
-                        backgroundColor: '#e63946',
                         fill: true,
-                        tension: 0.4,
+                        tension: 0.5,
                         pointRadius: 0,
                         stack: 'combined'
                     },
@@ -74,29 +74,30 @@
                         data: rawData.participation,
                         borderColor: '#9ca3af',
                         borderWidth: 2,
-                        borderDash: [5, 5],
+                        borderDash: [4, 4],
                         fill: false,
-                        tension: 0.3,
                         yAxisID: 'y1',
-                        pointRadius: 5,
-                        pointBackgroundColor: '#fff'
+                        pointRadius: 4,
+                        pointBackgroundColor: '#fff',
+                        tension: 0.3
                     }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                        titleFont: { size: 14, weight: 'bold' },
                         padding: 12,
+                        bodySpacing: 8,
                         callbacks: {
                             label: function(context) {
-                                if (context.datasetIndex === 3) return "Participation : " + context.parsed.y + "%";
-                                return context.dataset.label + " : " + context.raw + " voix";
+                                if (context.datasetIndex === 3) return "PARTICIPATION : " + context.parsed.y + "%";
+                                return context.dataset.label.toUpperCase() + " : " + context.raw + " voix";
                             }
                         }
                     }
@@ -105,22 +106,21 @@
                     y: {
                         stacked: true,
                         beginAtZero: true,
-                        title: { display: true, text: 'Volume total des voix' },
-                        grid: { color: '#f0f0f0' }
+                        grid: { color: '#f3f4f6' },
+                        title: { display: true, text: 'VOIX CUMULÉES', font: { weight: 'bold' } }
                     },
                     y1: {
                         position: 'right',
-                        beginAtZero: true,
                         max: 100,
-                        title: { display: true, text: 'Participation (%)' },
-                        grid: { display: false }
+                        grid: { display: false },
+                        title: { display: true, text: 'PARTICIPATION %', font: { weight: 'bold' } }
                     },
                     x: {
                         grid: { 
-                            color: '#e0e0e0', // Marqueurs visuels verticaux
-                            lineWidth: 1
+                            color: 'rgba(0,0,0,0.05)', 
+                            lineWidth: 3 // Segmentation verticale marquée
                         },
-                        ticks: { font: { size: 10, weight: 'bold' } }
+                        ticks: { font: { weight: 'bold', size: 10 } }
                     }
                 }
             }
