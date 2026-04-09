@@ -3,30 +3,17 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Potentiel Gauche vs Hurmic T2 - Bordeaux</title>
+    <title>Analyse Électorale - Bordeaux</title>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 40px auto; 
-            max-width: 900px;
-        }
-        #chart-container { 
-            background: white; 
-            padding: 30px; 
-            border: 1px solid #eee;
-            border-radius: 12px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
-        }
-        .header { margin-bottom: 30px; border-left: 4px solid #FF69B4; padding-left: 20px; }
-        h2 { margin: 0; font-size: 24px; color: #1a1a1a; }
+        body { font-family: -apple-system, sans-serif; margin: 40px auto; max-width: 900px; }
+        #chart-container { background: white; padding: 30px; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        h2 { margin: 0; font-size: 22px; color: #1a1a1a; text-align: center; margin-bottom: 20px; }
     </style>
 </head>
 <body>
     <div id="chart-container">
-        <div class="header">
-            <h2>Potentiel Gauche (T1) vs Réel Hurmic (T2)</h2>
-        </div>
+        <h2>Potentiel Gauche (T1) vs Réel Hurmic (T2)</h2>
         <div id="chart"></div>
     </div>
 
@@ -34,7 +21,7 @@
         const labels = ["Menuts 2", "Andr\u00e9 Meunier 3", "Andr\u00e9 Meunier 1"];
         const data_t1 = [511, 460, 444];
         const data_t2 = [500, 423, 428];
-        const custom = [["Menuts 2", "Bordeaux Sud (St Michel)", 511, 500, 11, "97,85%"], ["Andr\u00e9 Meunier 3", "Bordeaux Sud (St Michel)", 460, 423, 37, "91,96%"], ["Andr\u00e9 Meunier 1", "Bordeaux Sud (St Michel)", 444, 428, 16, "96,40%"]];
+        const custom = [["Menuts 2", "Bordeaux Sud (St Michel)", 11, "97,85%"], ["Andr\u00e9 Meunier 3", "Bordeaux Sud (St Michel)", 37, "91,96%"], ["Andr\u00e9 Meunier 1", "Bordeaux Sud (St Michel)", 16, "96,40%"]];
 
         const trace1 = {
             x: labels,
@@ -44,45 +31,39 @@
             marker: { color: '#E0E0E0' },
             customdata: custom,
             hovertemplate: 
-                '<b>Bureau : %{customdata[0]}</b><br>' +
-                'Quartier : %{customdata[1]}<br>' +
-                'Gauche_T1_voix : %{customdata[2]}<br>' +
-                'Hurmic_T2_voix : %{customdata[3]}<br>' +
-                'Voix_manquantes : %{customdata[4]}<br>' +
-                'Taux_report : %{customdata[5]}<br>' +
+                '<b>%{customdata[0]}</b><br>' +
+                'Potentiel T1 : %{y} voix<br>' +
+                'Voix perdues : %{customdata[2]}<br>' +
+                'Taux de report : %{customdata[3]}<br>' +
                 '<extra></extra>'
         };
 
         const trace2 = {
             x: labels,
             y: data_t2,
-            name: 'Score Pierre Hurmic (T2)',
+            name: 'Réel Hurmic (T2)',
             type: 'bar',
             marker: { color: '#FF69B4' },
             customdata: custom,
             hovertemplate: 
-                '<b>Bureau : %{customdata[0]}</b><br>' +
-                'Quartier : %{customdata[1]}<br>' +
-                'Gauche_T1_voix : %{customdata[2]}<br>' +
-                'Hurmic_T2_voix : %{customdata[3]}<br>' +
-                'Voix_manquantes : %{customdata[4]}<br>' +
-                'Taux_report : %{customdata[5]}<br>' +
+                '<b>%{customdata[0]}</b><br>' +
+                'Réel Hurmic T2 : %{y} voix<br>' +
+                'Voix perdues : %{customdata[2]}<br>' +
+                'Taux de report : %{customdata[3]}<br>' +
                 '<extra></extra>'
         };
-
-        const data = [trace1, trace2];
 
         const layout = {
             barmode: 'group',
             xaxis: { tickangle: -45, automargin: true },
-            yaxis: { title: 'Nombre de voix' },
+            yaxis: { title: 'Nombre de voix', gridcolor: '#f5f5f5' },
             margin: { t: 20, b: 100, l: 60, r: 20 },
             legend: { orientation: 'h', y: -0.3, x: 0.5, xanchor: 'center' },
-            hovermode: 'x unified',
+            hovermode: 'closest',
             template: 'plotly_white'
         };
 
-        Plotly.newPlot('chart', data, layout, { responsive: true, displayModeBar: false });
+        Plotly.newPlot('chart', [trace1, trace2], layout, { responsive: true, displayModeBar: false });
     </script>
 </body>
 </html>
