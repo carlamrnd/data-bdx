@@ -7,67 +7,50 @@ def to_float(val):
     except:
         return 0.0
 
-# Mapping Quartiers based on knowledge of Bordeaux (Menuts, André Meunier are in Bordeaux Sud)
-quartier_mapping = {
-    "1062": "Bordeaux Sud (St Michel)",
-    "5001": "Bordeaux Sud (St Michel)",
-    "5003": "Bordeaux Sud (St Michel)"
-}
+# Mapping Quartiers
+quartier_mapping = {"1062": "Bordeaux Sud (St Michel)", "5001": "Bordeaux Sud (St Michel)", "5003": "Bordeaux Sud (St Michel)"}
 
 data = []
 with open('bâtons démobilisés.csv', newline='', encoding='utf-8') as f:
     reader = csv.reader(f)
-    header = next(reader)
+    next(reader) # Header
     for row in reader:
         if len(row) < 100: continue
-        
         code_bv = row[0]
-        bureau = row[1]
         voix_t1 = to_float(row[86]) # TOTAL GAUCHE T1
         voix_t2 = to_float(row[83]) # Hurmic T2
         
-        part_t1 = row[4] # % Votants T1
-        part_t2 = row[66] # % Votants T2
-        report = row[90] # REPORT GAUCHE
-        perc_t2 = row[85] # % Voix/exprimés 2
-        
-        voix_manquantes = max(0, voix_t1 - voix_t2)
-        
         data.append({
-            "Bureau": f"{bureau}",
+            "Bureau": row[1],
             "Code": code_bv,
             "Quartier": quartier_mapping.get(code_bv, "Bordeaux Sud"),
             "Gauche_T1": int(voix_t1),
             "Hurmic_T2": int(voix_t2),
-            "Voix_manquantes": int(voix_manquantes),
-            "Report": report,
-            "Part_T1": part_t1,
-            "Part_T2": part_t2,
-            "Perc_T2": perc_t2
+            "Voix_manquantes": int(max(0, voix_t1 - voix_t2)),
+            "Taux_report": row[90] # TAUX DE REPORT
         })
 
-# Sort by potential
+# Sort by Gauche_T1
 data.sort(key=lambda x: x['Gauche_T1'], reverse=True)
 
 labels = [d['Bureau'] for d in data]
 gauche_t1 = [d['Gauche_T1'] for d in data]
 hurmic_t2 = [d['Hurmic_T2'] for d in data]
-custom_data = [[d['Quartier'], d['Part_T1'], d['Part_T2'], d['Voix_manquantes'], d['Report'], d['Perc_T2'], d['Code']] for d in data]
+# Custom data alignée sur le modèle demandé : Bureau, Quartier, Voix T1, Voix T2, Voix manquantes, Report
+custom_data = [[d['Bureau'], d['Quartier'], d['Gauche_T1'], d['Hurmic_T2'], d['Voix_manquantes'], d['Taux_report']] for d in data]
 
 html_content = f"""
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Bastions Démobilisés - Bordeaux 2026</title>
+    <title>Potentiel Gauche vs Hurmic T2 - Bordeaux</title>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <style>
         body {{ 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 40px auto; 
             max-width: 900px;
-            background-color: #ffffff; 
-            color: #333;
         }}
         #chart-container {{ 
             background: white; 
@@ -76,20 +59,16 @@ html_content = f"""
             border-radius: 12px; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
         }}
-        .header {{ margin-bottom: 30px; border-left: 4px solid #27ae60; padding-left: 20px; }}
+        .header {{ margin-bottom: 30px; border-left: 4px solid #FF69B4; padding-left: 20px; }}
         h2 {{ margin: 0; font-size: 24px; color: #1a1a1a; }}
-        p.subtitle {{ margin: 5px 0 0; color: #666; font-style: italic; }}
-        .footer {{ margin-top: 20px; font-size: 12px; color: #999; text-align: right; }}
     </style>
 </head>
 <body>
     <div id="chart-container">
         <div class="header">
-            <h2>Potentiel de gauche vs Réalité des urnes</h2>
-            <p class="subtitle">Analyse de la démobilisation dans les bastions historiques (Bordeaux Sud)</p>
+            <h2>Potentiel Gauche (T1) vs Réel Hurmic (T2)</h2>
         </div>
         <div id="chart"></div>
-        <div class="footer">Source : Résultats officiels par bureau de vote - Traitement journalistique</div>
     </div>
 
     <script>
@@ -106,10 +85,12 @@ html_content = f"""
             marker: {{ color: '#E0E0E0' }},
             customdata: custom,
             hovertemplate: 
-                '<b>%{{x}} (Bureau %{{customdata[6]}})</b><br>' +
-                'Quartier : %{{customdata[0]}}<br><br>' +
-                '<b>Potentiel Gauche (T1) : %{{y}} voix</b><br>' +
-                'Participation T1 : %{{customdata[1]}}<br>' +
+                '<b>Bureau : %{{customdata[0]}}</b><br>' +
+                'Quartier : %{{customdata[1]}}<br>' +
+                'Gauche_T1_voix : %{{customdata[2]}}<br>' +
+                'Hurmic_T2_voix : %{{customdata[3]}}<br>' +
+                'Voix_manquantes : %{{customdata[4]}}<br>' +
+                'Taux_report : %{{customdata[5]}}<br>' +
                 '<extra></extra>'
         }};
 
@@ -118,15 +99,15 @@ html_content = f"""
             y: data_t2,
             name: 'Score Pierre Hurmic (T2)',
             type: 'bar',
-            marker: {{ color: '#27ae60' }},
+            marker: {{ color: '#FF69B4' }},
             customdata: custom,
             hovertemplate: 
-                '<b>%{{x}} (Bureau %{{customdata[6]}})</b><br>' +
-                'Quartier : %{{customdata[0]}}<br><br>' +
-                '<b>Score Hurmic (T2) : %{{y}} voix (%{{customdata[5]}})</b><br>' +
-                'Voix manquantes : %{{customdata[3]}}<br>' +
-                'Taux de report : %{{customdata[4]}}<br>' +
-                'Participation T2 : %{{customdata[2]}}<br>' +
+                '<b>Bureau : %{{customdata[0]}}</b><br>' +
+                'Quartier : %{{customdata[1]}}<br>' +
+                'Gauche_T1_voix : %{{customdata[2]}}<br>' +
+                'Hurmic_T2_voix : %{{customdata[3]}}<br>' +
+                'Voix_manquantes : %{{customdata[4]}}<br>' +
+                'Taux_report : %{{customdata[5]}}<br>' +
                 '<extra></extra>'
         }};
 
@@ -134,41 +115,15 @@ html_content = f"""
 
         const layout = {{
             barmode: 'group',
-            bargap: 0.15,
-            bargroupgap: 0.1,
-            xaxis: {{
-                tickfont: {{ size: 13, color: '#444' }},
-                automargin: true,
-                fixedrange: true
-            }},
-            yaxis: {{
-                title: 'Nombre de voix',
-                gridcolor: '#f0f0f0',
-                fixedrange: true
-            }},
-            margin: {{ t: 20, b: 60, l: 60, r: 20 }},
-            legend: {{ 
-                orientation: 'h', 
-                y: -0.2, 
-                x: 0.5, 
-                xanchor: 'center',
-                font: {{ size: 12 }}
-            }},
-            hoverlabel: {{
-                bgcolor: '#FFF',
-                font: {{ family: 'sans-serif', size: 13 }},
-                bordercolor: '#CCC'
-            }},
+            xaxis: {{ tickangle: -45, automargin: true }},
+            yaxis: {{ title: 'Nombre de voix' }},
+            margin: {{ t: 20, b: 100, l: 60, r: 20 }},
+            legend: {{ orientation: 'h', y: -0.3, x: 0.5, xanchor: 'center' }},
             hovermode: 'x unified',
             template: 'plotly_white'
         }};
 
-        const config = {{ 
-            responsive: true, 
-            displayModeBar: false 
-        }};
-
-        Plotly.newPlot('chart', data, layout, config);
+        Plotly.newPlot('chart', data, layout, {{ responsive: true, displayModeBar: false }});
     </script>
 </body>
 </html>
