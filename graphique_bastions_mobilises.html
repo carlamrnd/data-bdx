@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bastions Mobilisés - Bordeaux 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: -apple-system, system-ui, sans-serif; padding: 20px; background: #fff; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; border: 1px solid #eee; }
+        h2 { text-align: center; color: #111; font-size: 22px; margin-bottom: 5px; }
+        p { text-align: center; color: #666; font-size: 14px; margin-bottom: 35px; }
+        .legend-custom { display: flex; justify-content: center; gap: 20px; font-size: 12px; margin-bottom: 20px; color: #444; }
+        .leg-item { display: flex; align-items: center; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 2px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Bastions Mobilisés : Potentiel vs Réel</h2>
+        <p>Comparaison entre le réservoir de voix de gauche (T1) et le score de Pierre Hurmic (T2) dans les bureaux mobilisés.</p>
+        
+        <div class="legend-custom">
+            <div class="leg-item"><div class="dot" style="background:#9ca3af"></div> Potentiel Gauche (T1)</div>
+            <div class="leg-item"><div class="dot" style="background:#f97316"></div> Réel Hurmic (T2)</div>
+        </div>
+
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        const rawData = [{"bureau": "Menuts 3", "code": "1063", "quartier": "Bordeaux", "t1": 12, "t2": 41, "difference": 29, "report": "102,44%"}, {"bureau": "Paul Bert 3", "code": "1043", "quartier": "Bordeaux", "t1": 12, "t2": 35, "difference": 23, "report": "102,84%"}, {"bureau": "Paul Bert 1", "code": "1041", "quartier": "Bordeaux", "t1": -17, "t2": 34, "difference": 51, "report": "105,90%"}];
+        
+        const ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: rawData.map(d => d.bureau),
+                datasets: [
+                    {
+                        label: 'Potentiel Gauche (T1)',
+                        data: rawData.map(d => d.t1),
+                        backgroundColor: '#9ca3af',
+                        borderRadius: 2,
+                        categoryPercentage: 0.8,
+                        barPercentage: 0.9
+                    },
+                    {
+                        label: 'Pierre Hurmic (T2)',
+                        data: rawData.map(d => d.t2),
+                        backgroundColor: '#f97316',
+                        borderRadius: 2,
+                        categoryPercentage: 0.8,
+                        barPercentage: 0.9
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                        padding: 12,
+                        callbacks: {
+                            title: (items) => rawData[items[0].dataIndex].bureau + " (Bureau " + rawData[items[0].dataIndex].code + ")",
+                            label: function(context) {
+                                const d = rawData[context.dataIndex];
+                                if (context.datasetIndex === 0) return "Potentiel T1 : " + d.t1 + " voix";
+                                return "Réel Hurmic T2 : " + d.t2 + " voix";
+                            },
+                            afterBody: function(context) {
+                                const d = rawData[context[0].dataIndex];
+                                const labelDiff = d.difference >= 0 ? "Voix gagnées : " : "Voix perdues : ";
+                                return [
+                                    '',
+                                    labelDiff + Math.abs(d.difference),
+                                    'Taux de report : ' + d.report,
+                                    'Quartier : ' + d.quartier
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        title: { display: true, text: 'Nombre de voix', font: { weight: 'bold' } },
+                        grid: { color: '#f9f9f9' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 10 } }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
