@@ -7,8 +7,6 @@ def to_float(val):
     except:
         return 0.0
 
-# Mapping Quartiers (Bordeaux Centre / Chartrons / etc. pour les bastions mobilisés)
-# Je vais essayer d'extraire le quartier si possible ou utiliser une valeur générique par défaut
 data = []
 try:
     with open('bâtons mobilisés.csv', newline='', encoding='utf-8') as f:
@@ -16,29 +14,34 @@ try:
         header = next(reader)
         for row in reader:
             if len(row) < 100: continue
+            
             code_bv = row[0]
             nom_bv = row[1]
-            voix_t1 = to_float(row[87]) # TOTAL GAUCHE T1 (Indice 87 dans ce fichier)
-            voix_t2 = to_float(row[84]) # Hurmic T2 (Indice 84 dans ce fichier)
             
-            # Vérifier si c'est bien Hurmic (Nom candidat 2 à l'indice 83)
-            if row[83].upper() != "HURMIC":
-                # Chercher Hurmic dans le header si besoin, mais selon l'index 83/84 ça semble bon
-                pass
-
+            # BI: Index 60, BJ: Index 61
+            voix_bi = to_float(row[60]) # TOTAL GAUCHE
+            voix_bj = to_float(row[61]) # TOTAL EXT GAUCHE
+            potentiel_t1 = voix_bi + voix_bj
+            
+            # CF: Index 83
+            score_t2 = to_float(row[83]) # Voix 2 (Hurmic T2)
+            
+            # CK: Index 89 (TAUX DE REPORT)
+            report = row[89]
+            
             data.append({
                 "bureau": nom_bv,
                 "code": code_bv,
-                "quartier": "Bordeaux", # Valeur par défaut
-                "t1": int(voix_t1),
-                "t2": int(voix_t2),
-                "difference": int(voix_t2 - voix_t1),
-                "report": row[90] # TAUX DE REPORT
+                "quartier": "Bordeaux",
+                "t1": int(potentiel_t1),
+                "t2": int(score_t2),
+                "difference": int(score_t2 - potentiel_t1),
+                "report": report
             })
 except Exception as e:
     print(f"Erreur lors de la lecture : {e}")
 
-# Trier par score T2
+# Trier par score T2 décroissant
 data.sort(key=lambda x: x['t2'], reverse=True)
 
 html_content = f"""
