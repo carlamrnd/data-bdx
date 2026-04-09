@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Histoire des votes - Alluvial Bordeaux</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: -apple-system, system-ui, sans-serif; padding: 20px; background: #fff; }
+        .container { max-width: 950px; margin: auto; height: 500px; padding: 30px; border-radius: 12px; }
+        h2 { text-align: left; color: #111; font-size: 24px; margin-bottom: 5px; }
+        p { text-align: left; color: #666; font-size: 14px; margin-bottom: 40px; }
+        .legend-custom { display: flex; gap: 20px; font-size: 13px; margin-bottom: 20px; }
+        .leg-item { display: flex; align-items: center; gap: 6px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Histoire des votes dans les 20 bastions</h2>
+        <p>Évolution des voix entre 2020 et 2026 (Cumul des bureaux sélectionnés).</p>
+        
+        <div class="legend-custom">
+            <div class="leg-item"><div class="dot" style="background:#e63946"></div> Extrême Gauche</div>
+            <div class="leg-item"><div class="dot" style="background:#ff69b4"></div> Gauche</div>
+            <div class="leg-item"><div class="dot" style="background:#f97316"></div> Autres</div>
+            <div class="leg-item"><div class="dot" style="background:#9ca3af"></div> Participation (%)</div>
+        </div>
+
+        <canvas id="alluvialChart"></canvas>
+    </div>
+
+    <script>
+        const rawData = {"labels": ["Municipales 2020 T1", "Municipales 2020 T2", "Pr\u00e9sidentielle 2022 T1", "L\u00e9gislatives 2022 T1", "L\u00e9gislatives 2022 T2", "L\u00e9gislatives 2024 T1", "L\u00e9gislatives 2024 T2", "Municipales 2026 T1", "Municipales 2026 T2"], "ext_gauche": [295, 227, 1328, 30, 0, 26, 0, 804, 0], "gauche": [472, 616, 258, 1136, 1193, 1648, 1699, 611, 1351], "autre": [294, 190, 726, 411, 328, 561, 474, 481, 431], "participation": ["35", "35", "71", "48", "47", "66", "64", "52", "49"]};
+        
+        const ctx = document.getElementById('alluvialChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: rawData.labels,
+                datasets: [
+                    {
+                        label: 'Extrême Gauche',
+                        data: rawData.ext_gauche,
+                        borderColor: '#e63946',
+                        backgroundColor: 'rgba(230, 57, 70, 0.05)',
+                        fill: false,
+                        tension: 0.4,
+                        borderWidth: 4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Gauche',
+                        data: rawData.gauche,
+                        borderColor: '#ff69b4',
+                        backgroundColor: 'rgba(255, 105, 180, 0.05)',
+                        fill: false,
+                        tension: 0.4,
+                        borderWidth: 4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Autres',
+                        data: rawData.autre,
+                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(249, 115, 22, 0.05)',
+                        fill: false,
+                        tension: 0.4,
+                        borderWidth: 4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Participation (%)',
+                        data: rawData.participation,
+                        borderColor: '#9ca3af',
+                        borderDash: [5, 5],
+                        fill: false,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        yAxisID: 'y1',
+                        pointStyle: 'rectRot',
+                        pointRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                let val = context.parsed.y;
+                                if (context.datasetIndex === 3) return "Participation : " + val + "%";
+                                return context.dataset.label + " : " + val + " voix";
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Nombre de voix' },
+                        grid: { color: '#f3f4f6' }
+                    },
+                    y1: {
+                        position: 'right',
+                        beginAtZero: true,
+                        max: 100,
+                        title: { display: true, text: 'Participation (%)' },
+                        grid: { drawOnChartArea: false }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 10 } }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
