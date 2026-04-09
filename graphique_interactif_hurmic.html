@@ -3,67 +3,97 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Analyse Électorale - Bordeaux</title>
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <title>Comparaison T1/T2 - Bordeaux 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: -apple-system, sans-serif; margin: 40px auto; max-width: 900px; }
-        #chart-container { background: white; padding: 30px; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        h2 { margin: 0; font-size: 22px; color: #1a1a1a; text-align: center; margin-bottom: 20px; }
+        body { font-family: -apple-system, system-ui, sans-serif; padding: 20px; background: #fff; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; border: 1px solid #eee; }
+        h2 { text-align: center; color: #111; font-size: 22px; margin-bottom: 5px; }
+        p { text-align: center; color: #666; font-size: 14px; margin-bottom: 35px; }
+        .legend-custom { display: flex; justify-content: center; gap: 20px; font-size: 12px; margin-bottom: 20px; color: #444; }
+        .leg-item { display: flex; align-items: center; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 2px; }
     </style>
 </head>
 <body>
-    <div id="chart-container">
-        <h2>Potentiel Gauche (T1) vs Réel Hurmic (T2)</h2>
-        <div id="chart"></div>
+    <div class="container">
+        <h2>Potentiel Gauche vs Réel Hurmic</h2>
+        <p>Analyse de la démobilisation dans les bastions historiques (Bordeaux Sud).</p>
+        
+        <div class="legend-custom">
+            <div class="leg-item"><div class="dot" style="background:#9ca3af"></div> Potentiel Gauche (T1)</div>
+            <div class="leg-item"><div class="dot" style="background:#FF69B4"></div> Réel Hurmic (T2)</div>
+        </div>
+
+        <canvas id="myChart"></canvas>
     </div>
 
     <script>
-        const labels = ["Menuts 2", "Andr\u00e9 Meunier 3", "Andr\u00e9 Meunier 1"];
-        const data_t1 = [511, 460, 444];
-        const data_t2 = [500, 423, 428];
-        const custom = [["Menuts 2", "Bordeaux Sud (St Michel)", 11, "97,85%"], ["Andr\u00e9 Meunier 3", "Bordeaux Sud (St Michel)", 37, "91,96%"], ["Andr\u00e9 Meunier 1", "Bordeaux Sud (St Michel)", 16, "96,40%"]];
-
-        const trace1 = {
-            x: labels,
-            y: data_t1,
-            name: 'Potentiel Gauche (T1)',
+        const rawData = [{"bureau": "Menuts 2", "code": "1062", "quartier": "Bordeaux Sud (St Michel)", "t1": 511, "t2": 500, "manquantes": 11, "report": "97,85%"}, {"bureau": "Andr\u00e9 Meunier 3", "code": "5003", "quartier": "Bordeaux Sud (St Michel)", "t1": 460, "t2": 423, "manquantes": 37, "report": "91,96%"}, {"bureau": "Andr\u00e9 Meunier 1", "code": "5001", "quartier": "Bordeaux Sud (St Michel)", "t1": 444, "t2": 428, "manquantes": 16, "report": "96,40%"}];
+        
+        const ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, {
             type: 'bar',
-            marker: { color: '#E0E0E0' },
-            customdata: custom,
-            hovertemplate: 
-                '<b>%{customdata[0]}</b><br>' +
-                'Potentiel T1 : %{y} voix<br>' +
-                'Voix perdues : %{customdata[2]}<br>' +
-                'Taux de report : %{customdata[3]}<br>' +
-                '<extra></extra>'
-        };
-
-        const trace2 = {
-            x: labels,
-            y: data_t2,
-            name: 'Réel Hurmic (T2)',
-            type: 'bar',
-            marker: { color: '#FF69B4' },
-            customdata: custom,
-            hovertemplate: 
-                '<b>%{customdata[0]}</b><br>' +
-                'Réel Hurmic T2 : %{y} voix<br>' +
-                'Voix perdues : %{customdata[2]}<br>' +
-                'Taux de report : %{customdata[3]}<br>' +
-                '<extra></extra>'
-        };
-
-        const layout = {
-            barmode: 'group',
-            xaxis: { tickangle: -45, automargin: true },
-            yaxis: { title: 'Nombre de voix', gridcolor: '#f5f5f5' },
-            margin: { t: 20, b: 100, l: 60, r: 20 },
-            legend: { orientation: 'h', y: -0.3, x: 0.5, xanchor: 'center' },
-            hovermode: 'closest',
-            template: 'plotly_white'
-        };
-
-        Plotly.newPlot('chart', [trace1, trace2], layout, { responsive: true, displayModeBar: false });
+            data: {
+                labels: rawData.map(d => d.bureau),
+                datasets: [
+                    {
+                        label: 'Potentiel Gauche (T1)',
+                        data: rawData.map(d => d.t1),
+                        backgroundColor: '#9ca3af',
+                        borderRadius: 2,
+                        categoryPercentage: 0.8,
+                        barPercentage: 0.9
+                    },
+                    {
+                        label: 'Réel Hurmic (T2)',
+                        data: rawData.map(d => d.t2),
+                        backgroundColor: '#FF69B4',
+                        borderRadius: 2,
+                        categoryPercentage: 0.8,
+                        barPercentage: 0.9
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                        padding: 12,
+                        callbacks: {
+                            title: (items) => rawData[items[0].dataIndex].bureau + " (Bureau " + rawData[items[0].dataIndex].code + ")",
+                            label: function(context) {
+                                const d = rawData[context.dataIndex];
+                                if (context.datasetIndex === 0) return "Potentiel T1 : " + d.t1 + " voix";
+                                return "Réel Hurmic T2 : " + d.t2 + " voix";
+                            },
+                            afterBody: function(context) {
+                                const d = rawData[context[0].dataIndex];
+                                return [
+                                    '',
+                                    "Voix perdues : " + d.manquantes,
+                                    'Taux de report : ' + d.report,
+                                    'Quartier : ' + d.quartier
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        title: { display: true, text: 'Nombre de voix', font: { weight: 'bold' } },
+                        grid: { color: '#f9f9f9' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 10 } }
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>
