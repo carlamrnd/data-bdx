@@ -7,6 +7,20 @@ def to_float(val):
     except:
         return 0.0
 
+def format_report(val):
+    # Ajoute % si absent et gère les formats numériques
+    val = val.strip()
+    if not val: return "0%"
+    if "%" in val: return val
+    try:
+        # Si c'est un nombre comme 0.95, on le multiplie par 100
+        f_val = float(val.replace(',', '.'))
+        if f_val <= 2.0: # Probablement un ratio
+            return f"{round(f_val * 100, 2)}%"
+        return f"{val}%"
+    except:
+        return val
+
 data = []
 try:
     with open('bâtons mobilisés.csv', newline='', encoding='utf-8') as f:
@@ -27,21 +41,20 @@ try:
             score_t2 = to_float(row[83]) # Voix 2 (Hurmic T2)
             
             # CK: Index 89 (TAUX DE REPORT)
-            report = row[89]
+            report_raw = row[89]
+            report_formatted = format_report(report_raw)
             
             data.append({
                 "bureau": nom_bv,
                 "code": code_bv,
-                "quartier": "Bordeaux",
                 "t1": int(potentiel_t1),
                 "t2": int(score_t2),
                 "difference": int(score_t2 - potentiel_t1),
-                "report": report
+                "report": report_formatted
             })
 except Exception as e:
     print(f"Erreur lors de la lecture : {e}")
 
-# Trier par score T2 décroissant
 data.sort(key=lambda x: x['t2'], reverse=True)
 
 html_content = f"""
@@ -63,7 +76,7 @@ html_content = f"""
 </head>
 <body>
     <div class="container">
-        <h2>Bastions Mobilisés : Potentiel vs Réel</h2>
+        <h2>Bastions mobilisés : comparaison des voix de gauche entre les deux tours</h2>
         <p>Comparaison entre le réservoir de voix de gauche (T1) et le score de Pierre Hurmic (T2) dans les bureaux mobilisés.</p>
         
         <div class="legend-custom">
@@ -121,8 +134,7 @@ html_content = f"""
                                 return [
                                     '',
                                     labelDiff + Math.abs(d.difference),
-                                    'Taux de report : ' + d.report,
-                                    'Quartier : ' + d.quartier
+                                    'Taux de report : ' + d.report
                                 ];
                             }}
                         }}
