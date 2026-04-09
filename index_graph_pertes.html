@@ -2,56 +2,66 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>Top 15 Pertes de voix - Bordeaux 2026</title>
+    <meta charset="UTF-8">
+    <title>Top 15 des voix manquantes - Bordeaux 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
-        body { font-family: -apple-system, system-ui, sans-serif; padding: 15px; background: #fff; }
-        .container { max-width: 800px; margin: auto; }
-        h2 { text-align: left; color: #111; font-size: 20px; margin: 0 0 5px 0; }
-        p { text-align: left; color: #666; font-size: 13px; margin: 0 0 25px 0; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; background-color: #ffffff; }
+        .container { max-width: 800px; margin: auto; height: 500px; }
+        h2 { font-size: 22px; color: #1a1a1a; margin-bottom: 5px; font-weight: 700; }
+        p { font-size: 14px; color: #666; margin-bottom: 25px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Top 15 des bureaux où la gauche a le plus reculé</h2>
-        <p>Différence de voix entre le potentiel de gauche (T1) et le score de Pierre Hurmic (T2).</p>
-        <canvas id="rankingChart" height="420"></canvas>
+        <h2>Classement des bureaux : Voix de gauche manquantes</h2>
+        <p>Bureaux de vote où l'écart entre le potentiel du 1er tour et le réel de Pierre Hurmic est le plus fort.</p>
+        <canvas id="rankingChart"></canvas>
     </div>
 
     <script>
-        const rawData = [{"bureau": "4163", "perte": -38, "t1": 100, "t2": 138, "report": "79,77%"}, {"bureau": "4161", "perte": -53, "t1": 152, "t2": 205, "report": "87,23%"}, {"bureau": "4182", "perte": -58, "t1": 126, "t2": 184, "report": "93,88%"}, {"bureau": "4121", "perte": -67, "t1": 59, "t2": 126, "report": "85,14%"}, {"bureau": "4162", "perte": -81, "t1": 150, "t2": 231, "report": "89,88%"}, {"bureau": "5005", "perte": -98, "t1": 87, "t2": 185, "report": "93,43%"}, {"bureau": "1022", "perte": -103, "t1": 167, "t2": 270, "report": "94,74%"}, {"bureau": "4141", "perte": -113, "t1": 142, "t2": 255, "report": "95,51%"}, {"bureau": "5084", "perte": -114, "t1": 154, "t2": 268, "report": "93,06%"}, {"bureau": "5045", "perte": -123, "t1": 244, "t2": 367, "report": "91,98%"}, {"bureau": "1021", "perte": -125, "t1": 148, "t2": 273, "report": "95,12%"}, {"bureau": "5001", "perte": -222, "t1": 206, "t2": 428, "report": "96,40%"}, {"bureau": "5003", "perte": -238, "t1": 185, "t2": 423, "report": "91,96%"}, {"bureau": "5002", "perte": -240, "t1": 329, "t2": 569, "report": "97,10%"}, {"bureau": "1061", "perte": -259, "t1": 221, "t2": 480, "report": "96,58%"}];
+        const rawData = [{"Bureau": "5003", "Voix_manquantes": 37, "Gauche_T1_voix": "185", "Hurmic_T2_voix": "423", "Taux_report": "91,96%", "Quartier": "Bordeaux"}, {"Bureau": "4163", "Voix_manquantes": 35, "Gauche_T1_voix": "100", "Hurmic_T2_voix": "138", "Taux_report": "79,77%", "Quartier": "Bordeaux"}, {"Bureau": "5045", "Voix_manquantes": 32, "Gauche_T1_voix": "244", "Hurmic_T2_voix": "367", "Taux_report": "91,98%", "Quartier": "Bordeaux"}, {"Bureau": "4161", "Voix_manquantes": 30, "Gauche_T1_voix": "152", "Hurmic_T2_voix": "205", "Taux_report": "87,23%", "Quartier": "Bordeaux"}, {"Bureau": "4162", "Voix_manquantes": 26, "Gauche_T1_voix": "150", "Hurmic_T2_voix": "231", "Taux_report": "89,88%", "Quartier": "Bordeaux"}, {"Bureau": "4121", "Voix_manquantes": 22, "Gauche_T1_voix": "59", "Hurmic_T2_voix": "126", "Taux_report": "85,14%", "Quartier": "Bordeaux"}, {"Bureau": "5084", "Voix_manquantes": 20, "Gauche_T1_voix": "154", "Hurmic_T2_voix": "268", "Taux_report": "93,06%", "Quartier": "Bordeaux"}, {"Bureau": "1061", "Voix_manquantes": 17, "Gauche_T1_voix": "221", "Hurmic_T2_voix": "480", "Taux_report": "96,58%", "Quartier": "Bordeaux"}, {"Bureau": "5002", "Voix_manquantes": 17, "Gauche_T1_voix": "329", "Hurmic_T2_voix": "569", "Taux_report": "97,10%", "Quartier": "Bordeaux"}, {"Bureau": "5001", "Voix_manquantes": 16, "Gauche_T1_voix": "206", "Hurmic_T2_voix": "428", "Taux_report": "96,40%", "Quartier": "Bordeaux"}, {"Bureau": "1022", "Voix_manquantes": 15, "Gauche_T1_voix": "167", "Hurmic_T2_voix": "270", "Taux_report": "94,74%", "Quartier": "Bordeaux"}, {"Bureau": "1021", "Voix_manquantes": 14, "Gauche_T1_voix": "148", "Hurmic_T2_voix": "273", "Taux_report": "95,12%", "Quartier": "Bordeaux"}, {"Bureau": "5005", "Voix_manquantes": 13, "Gauche_T1_voix": "87", "Hurmic_T2_voix": "185", "Taux_report": "93,43%", "Quartier": "Bordeaux"}, {"Bureau": "4182", "Voix_manquantes": 12, "Gauche_T1_voix": "126", "Hurmic_T2_voix": "184", "Taux_report": "93,88%", "Quartier": "Bordeaux"}, {"Bureau": "4141", "Voix_manquantes": 12, "Gauche_T1_voix": "142", "Hurmic_T2_voix": "255", "Taux_report": "95,51%", "Quartier": "Bordeaux"}];
         Chart.register(ChartDataLabels);
 
         const ctx = document.getElementById('rankingChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: rawData.map(d => "Bureau " + d.bureau),
+                labels: rawData.map(d => "Bureau " + d.Bureau),
                 datasets: [{
-                    data: rawData.map(d => d.perte),
-                    backgroundColor: '#e63946',
-                    borderRadius: 3,
-                    barThickness: 18,
+                    label: 'Voix manquantes',
+                    data: rawData.map(d => d.Voix_manquantes),
+                    backgroundColor: '#e63946', // Rouge pour évoquer la perte
+                    borderRadius: 4,
+                    barThickness: 20,
+                    borderSkipped: false,
                 }]
             },
             options: {
                 indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
+                layout: { padding: { right: 50 } },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                        padding: 10,
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1a1a1a',
+                        bodyColor: '#444',
+                        borderColor: '#e63946',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false,
                         callbacks: {
-                            label: (ctx) => {
-                                const d = rawData[ctx.dataIndex];
+                            title: (items) => "Bureau de vote " + rawData[items[0].dataIndex].Bureau,
+                            label: function(context) {
+                                const d = rawData[context.dataIndex];
                                 return [
-                                    "Voix manquantes : " + d.perte,
-                                    "Potentiel T1 : " + d.t1,
-                                    "Réel T2 : " + d.t2,
-                                    "Report : " + d.report
+                                    "Voix manquantes : " + d.Voix_manquantes,
+                                    "Potentiel Gauche (T1) : " + d.Gauche_T1_voix,
+                                    "Score Hurmic (T2) : " + d.Hurmic_T2_voix,
+                                    "Taux de report : " + d.Taux_report
                                 ];
                             }
                         }
@@ -59,28 +69,22 @@
                     datalabels: {
                         anchor: 'end',
                         align: 'right',
-                        color: '#111',
-                        font: { weight: '600', size: 11 },
-                        offset: 8,
-                        formatter: (val) => val + " voix"
+                        color: '#1a1a1a',
+                        font: { weight: 'bold', size: 12 },
+                        formatter: (val) => val
                     }
                 },
                 scales: {
                     x: { 
                         beginAtZero: true,
-                        grid: { color: '#f3f4f6' },
-                        title: { display: true, text: 'Voix manquantes', font: { size: 10 } }
+                        grid: { color: '#f0f0f0', drawBorder: false },
+                        title: { display: true, text: 'Nombre de voix manquantes', font: { size: 11 } }
                     },
                     y: { 
                         grid: { display: false },
-                        ticks: { 
-                            align: 'center', // Alignement des bureaux à gauche
-                            font: { size: 12, weight: '600' },
-                            padding: 10
-                        }
+                        ticks: { color: '#1a1a1a', font: { size: 12, weight: '500' } }
                     }
-                },
-                layout: { padding: { right: 70 } }
+                }
             }
         });
     </script>
