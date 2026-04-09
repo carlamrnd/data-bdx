@@ -17,113 +17,118 @@ with open('bâtons démobilisés.csv', newline='', encoding='utf-8') as f:
     for row in reader:
         if len(row) < 100: continue
         code_bv = row[0]
+        nom_bv = row[1]
         voix_t1 = to_float(row[86]) # TOTAL GAUCHE T1
         voix_t2 = to_float(row[83]) # Hurmic T2
         
         data.append({
-            "Bureau": row[1],
-            "Code": code_bv,
-            "Quartier": quartier_mapping.get(code_bv, "Bordeaux Sud"),
-            "Gauche_T1": int(voix_t1),
-            "Hurmic_T2": int(voix_t2),
-            "Voix_manquantes": int(max(0, voix_t1 - voix_t2)),
-            "Taux_report": row[90] # TAUX DE REPORT
+            "bureau": nom_bv,
+            "code": code_bv,
+            "quartier": quartier_mapping.get(code_bv, "Bordeaux Sud"),
+            "t1": int(voix_t1),
+            "t2": int(voix_t2),
+            "manquantes": int(max(0, voix_t1 - voix_t2)),
+            "report": row[90]
         })
 
-# Sort by Gauche_T1
-data.sort(key=lambda x: x['Gauche_T1'], reverse=True)
-
-labels = [d['Bureau'] for d in data]
-gauche_t1 = [d['Gauche_T1'] for d in data]
-hurmic_t2 = [d['Hurmic_T2'] for d in data]
-# Custom data alignée sur le modèle demandé : Bureau, Quartier, Voix T1, Voix T2, Voix manquantes, Report
-custom_data = [[d['Bureau'], d['Quartier'], d['Gauche_T1'], d['Hurmic_T2'], d['Voix_manquantes'], d['Taux_report']] for d in data]
+data.sort(key=lambda x: x['t1'], reverse=True)
 
 html_content = f"""
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Potentiel Gauche vs Hurmic T2 - Bordeaux</title>
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <title>Comparaison T1/T2 - Bordeaux 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {{ 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 40px auto; 
-            max-width: 900px;
-        }}
-        #chart-container {{ 
-            background: white; 
-            padding: 30px; 
-            border: 1px solid #eee;
-            border-radius: 12px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
-        }}
-        .header {{ margin-bottom: 30px; border-left: 4px solid #FF69B4; padding-left: 20px; }}
-        h2 {{ margin: 0; font-size: 24px; color: #1a1a1a; }}
+        body {{ font-family: -apple-system, system-ui, sans-serif; padding: 20px; background: #fff; }}
+        .container {{ max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; border: 1px solid #eee; }}
+        h2 {{ text-align: center; color: #111; font-size: 22px; margin-bottom: 5px; }}
+        p {{ text-align: center; color: #666; font-size: 14px; margin-bottom: 35px; }}
+        .legend-custom {{ display: flex; justify-content: center; gap: 20px; font-size: 12px; margin-bottom: 20px; color: #444; }}
+        .leg-item {{ display: flex; align-items: center; gap: 6px; }}
+        .dot {{ width: 10px; height: 10px; border-radius: 2px; }}
     </style>
 </head>
 <body>
-    <div id="chart-container">
-        <div class="header">
-            <h2>Potentiel Gauche (T1) vs Réel Hurmic (T2)</h2>
+    <div class="container">
+        <h2>Bastions démobilisés : comparaison des voix de gauche entre les deux tours</h2>
+        <p>Analyse de la démobilisation dans les bastions historiques (Bordeaux Sud).</p>
+        
+        <div class="legend-custom">
+            <div class="leg-item"><div class="dot" style="background:#9ca3af"></div> Potentiel Gauche (T1)</div>
+            <div class="leg-item"><div class="dot" style="background:#FF69B4"></div> Réel Hurmic (T2)</div>
         </div>
-        <div id="chart"></div>
+
+        <canvas id="myChart"></canvas>
     </div>
 
     <script>
-        const labels = {json.dumps(labels)};
-        const data_t1 = {json.dumps(gauche_t1)};
-        const data_t2 = {json.dumps(hurmic_t2)};
-        const custom = {json.dumps(custom_data)};
-
-        const trace1 = {{
-            x: labels,
-            y: data_t1,
-            name: 'Potentiel Gauche (T1)',
+        const rawData = {json.dumps(data)};
+        
+        const ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, {{
             type: 'bar',
-            marker: {{ color: '#E0E0E0' }},
-            customdata: custom,
-            hovertemplate: 
-                '<b>Bureau : %{{customdata[0]}}</b><br>' +
-                'Quartier : %{{customdata[1]}}<br>' +
-                'Gauche_T1_voix : %{{customdata[2]}}<br>' +
-                'Hurmic_T2_voix : %{{customdata[3]}}<br>' +
-                'Voix_manquantes : %{{customdata[4]}}<br>' +
-                'Taux_report : %{{customdata[5]}}<br>' +
-                '<extra></extra>'
-        }};
-
-        const trace2 = {{
-            x: labels,
-            y: data_t2,
-            name: 'Score Pierre Hurmic (T2)',
-            type: 'bar',
-            marker: {{ color: '#FF69B4' }},
-            customdata: custom,
-            hovertemplate: 
-                '<b>Bureau : %{{customdata[0]}}</b><br>' +
-                'Quartier : %{{customdata[1]}}<br>' +
-                'Gauche_T1_voix : %{{customdata[2]}}<br>' +
-                'Hurmic_T2_voix : %{{customdata[3]}}<br>' +
-                'Voix_manquantes : %{{customdata[4]}}<br>' +
-                'Taux_report : %{{customdata[5]}}<br>' +
-                '<extra></extra>'
-        }};
-
-        const data = [trace1, trace2];
-
-        const layout = {{
-            barmode: 'group',
-            xaxis: {{ tickangle: -45, automargin: true }},
-            yaxis: {{ title: 'Nombre de voix' }},
-            margin: {{ t: 20, b: 100, l: 60, r: 20 }},
-            legend: {{ orientation: 'h', y: -0.3, x: 0.5, xanchor: 'center' }},
-            hovermode: 'x unified',
-            template: 'plotly_white'
-        }};
-
-        Plotly.newPlot('chart', data, layout, {{ responsive: true, displayModeBar: false }});
+            data: {{
+                labels: rawData.map(d => d.bureau),
+                datasets: [
+                    {{
+                        label: 'Potentiel Gauche (T1)',
+                        data: rawData.map(d => d.t1),
+                        backgroundColor: '#9ca3af',
+                        borderRadius: 2,
+                        categoryPercentage: 0.8,
+                        barPercentage: 0.9
+                    }},
+                    {{
+                        label: 'Réel Hurmic (T2)',
+                        data: rawData.map(d => d.t2),
+                        backgroundColor: '#FF69B4',
+                        borderRadius: 2,
+                        categoryPercentage: 0.8,
+                        barPercentage: 0.9
+                    }}
+                ]
+            }},
+            options: {{
+                responsive: true,
+                plugins: {{
+                    legend: {{ display: false }},
+                    tooltip: {{
+                        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                        padding: 12,
+                        callbacks: {{
+                            title: (items) => rawData[items[0].dataIndex].bureau + " (Bureau " + rawData[items[0].dataIndex].code + ")",
+                            label: function(context) {{
+                                const d = rawData[context.dataIndex];
+                                if (context.datasetIndex === 0) return "Potentiel T1 : " + d.t1 + " voix";
+                                return "Réel Hurmic T2 : " + d.t2 + " voix";
+                            }},
+                            afterBody: function(context) {{
+                                const d = rawData[context[0].dataIndex];
+                                return [
+                                    '',
+                                    "Voix perdues : " + d.manquantes,
+                                    'Taux de report : ' + d.report,
+                                    'Quartier : ' + d.quartier
+                                ];
+                            }}
+                        }}
+                    }}
+                }},
+                scales: {{
+                    y: {{ 
+                        beginAtZero: true,
+                        title: {{ display: true, text: 'Nombre de voix', font: {{ weight: 'bold' }} }},
+                        grid: {{ color: '#f9f9f9' }}
+                    }},
+                    x: {{
+                        grid: {{ display: false }},
+                        ticks: {{ font: {{ size: 10 }} }}
+                    }}
+                }}
+            }}
+        }});
     </script>
 </body>
 </html>
