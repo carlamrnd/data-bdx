@@ -3,28 +3,28 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Histoire des votes - Alluvial Bordeaux</title>
+    <title>Flux des votes - Bordeaux 2020-2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: -apple-system, system-ui, sans-serif; padding: 20px; background: #fff; }
-        .container { max-width: 950px; margin: auto; height: 500px; padding: 30px; border-radius: 12px; }
+        .container { max-width: 1000px; margin: auto; height: 550px; padding: 20px; }
         h2 { text-align: left; color: #111; font-size: 24px; margin-bottom: 5px; }
-        p { text-align: left; color: #666; font-size: 14px; margin-bottom: 40px; }
-        .legend-custom { display: flex; gap: 20px; font-size: 13px; margin-bottom: 20px; }
+        p { text-align: left; color: #666; font-size: 14px; margin-bottom: 30px; }
+        .legend-custom { display: flex; gap: 20px; font-size: 13px; margin-bottom: 10px; font-weight: 600; }
         .leg-item { display: flex; align-items: center; gap: 6px; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot { width: 14px; height: 14px; border-radius: 3px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Histoire des votes dans les 20 bastions</h2>
-        <p>Évolution des voix entre 2020 et 2026 (Cumul des bureaux sélectionnés).</p>
+        <h2>Flux électoral : Évolution des blocs (2020-2026)</h2>
+        <p>L'épaisseur des courbes représente le nombre de voix. Les blocs restent superposés par famille politique.</p>
         
         <div class="legend-custom">
             <div class="leg-item"><div class="dot" style="background:#e63946"></div> Extrême Gauche</div>
             <div class="leg-item"><div class="dot" style="background:#ff69b4"></div> Gauche</div>
             <div class="leg-item"><div class="dot" style="background:#f97316"></div> Autres</div>
-            <div class="leg-item"><div class="dot" style="background:#9ca3af"></div> Participation (%)</div>
+            <div class="leg-item"><div class="dot" style="background:#9ca3af; border: 1px dashed #666;"></div> Participation (%)</div>
         </div>
 
         <canvas id="alluvialChart"></canvas>
@@ -40,49 +40,46 @@
                 labels: rawData.labels,
                 datasets: [
                     {
-                        label: 'Extrême Gauche',
-                        data: rawData.ext_gauche,
-                        borderColor: '#e63946',
-                        backgroundColor: 'rgba(230, 57, 70, 0.05)',
-                        fill: false,
+                        label: 'Autres',
+                        data: rawData.autre,
+                        borderColor: 'transparent',
+                        backgroundColor: '#f97316',
+                        fill: true,
                         tension: 0.4,
-                        borderWidth: 4,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointRadius: 0,
+                        stack: 'combined'
                     },
                     {
                         label: 'Gauche',
                         data: rawData.gauche,
-                        borderColor: '#ff69b4',
-                        backgroundColor: 'rgba(255, 105, 180, 0.05)',
-                        fill: false,
+                        borderColor: 'transparent',
+                        backgroundColor: '#ff69b4',
+                        fill: true,
                         tension: 0.4,
-                        borderWidth: 4,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointRadius: 0,
+                        stack: 'combined'
                     },
                     {
-                        label: 'Autres',
-                        data: rawData.autre,
-                        borderColor: '#f97316',
-                        backgroundColor: 'rgba(249, 115, 22, 0.05)',
-                        fill: false,
+                        label: 'Extrême Gauche',
+                        data: rawData.ext_gauche,
+                        borderColor: 'transparent',
+                        backgroundColor: '#e63946',
+                        fill: true,
                         tension: 0.4,
-                        borderWidth: 4,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointRadius: 0,
+                        stack: 'combined'
                     },
                     {
                         label: 'Participation (%)',
                         data: rawData.participation,
                         borderColor: '#9ca3af',
+                        borderWidth: 2,
                         borderDash: [5, 5],
                         fill: false,
-                        tension: 0.4,
-                        borderWidth: 2,
+                        tension: 0.3,
                         yAxisID: 'y1',
-                        pointStyle: 'rectRot',
-                        pointRadius: 4
+                        pointRadius: 5,
+                        pointBackgroundColor: '#fff'
                     }
                 ]
             },
@@ -92,33 +89,38 @@
                 plugins: {
                     legend: { display: false },
                     tooltip: {
+                        mode: 'index',
+                        intersect: false,
                         backgroundColor: 'rgba(0, 0, 0, 0.9)',
                         padding: 12,
                         callbacks: {
                             label: function(context) {
-                                let val = context.parsed.y;
-                                if (context.datasetIndex === 3) return "Participation : " + val + "%";
-                                return context.dataset.label + " : " + val + " voix";
+                                if (context.datasetIndex === 3) return "Participation : " + context.parsed.y + "%";
+                                return context.dataset.label + " : " + context.raw + " voix";
                             }
                         }
                     }
                 },
                 scales: {
                     y: {
+                        stacked: true,
                         beginAtZero: true,
-                        title: { display: true, text: 'Nombre de voix' },
-                        grid: { color: '#f3f4f6' }
+                        title: { display: true, text: 'Volume total des voix' },
+                        grid: { color: '#f0f0f0' }
                     },
                     y1: {
                         position: 'right',
                         beginAtZero: true,
                         max: 100,
                         title: { display: true, text: 'Participation (%)' },
-                        grid: { drawOnChartArea: false }
+                        grid: { display: false }
                     },
                     x: {
-                        grid: { display: false },
-                        ticks: { font: { size: 10 } }
+                        grid: { 
+                            color: '#e0e0e0', // Marqueurs visuels verticaux
+                            lineWidth: 1
+                        },
+                        ticks: { font: { size: 10, weight: 'bold' } }
                     }
                 }
             }
