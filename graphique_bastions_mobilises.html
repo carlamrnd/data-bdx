@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobilisation Bastions de Gauche</title>
+    <title>Bastions mobilisés - Bordeaux 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: sans-serif; background-color: #f9f9f9; padding: 20px; }
-        .chart-container { height: 500px; width: 100%; max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 12px; }
-        h2 { text-align: center; font-size: 18px; margin-bottom: 30px; }
+        body { font-family: -apple-system, sans-serif; background-color: #f9f9f9; padding: 20px; }
+        .chart-container { position: relative; height: 500px; width: 100%; max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h2 { text-align: center; font-size: 19px; color: #333; margin-bottom: 30px; }
     </style>
 </head>
 <body>
@@ -16,23 +16,70 @@
         <h2>Bastions mobilisés : comparaison des voix de gauche entre les deux tours</h2>
         <canvas id="mobilisationChart"></canvas>
     </div>
+
     <script>
         const ctx = document.getElementById('mobilisationChart').getContext('2d');
+        
         const data = [
-            { b: 'Paul Bert 1', t1: 9, t2: 238 },
-            { b: 'Paul Bert 3', t1: 41, t2: 241 },
-            { b: 'Menuts 3', t1: 30, t2: 147 }
+            { bureau: 'Paul Bert 1', quartier: 'Hôtel de Ville / Paul Bert', t1: 441, t2: 467, supp: 26, report: '105.9%', part: '52.96%' },
+            { bureau: 'Paul Bert 3', quartier: 'Hôtel de Ville / Paul Bert', t1: 423, t2: 435, supp: 12, report: '102.8%', part: '55.64%' },
+            { bureau: 'Menuts 3', quartier: 'Saint-Michel', t1: 492, t2: 504, supp: 12, report: '102.4%', part: '54.56%' }
         ];
+
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: data.map(d => d.b),
+                labels: data.map(d => d.bureau),
                 datasets: [
-                    { label: 'Potentiel Gauche (T1)', data: data.map(d => d.t1), backgroundColor: '#E0E0E0' },
-                    { label: 'Hurmic (T2)', data: data.map(d => d.t2), backgroundColor: '#FFA500' }
+                    {
+                        label: 'Potentiel Gauche (1er Tour)',
+                        data: data.map(d => d.t1),
+                        backgroundColor: '#E0E0E0', // Gris clair
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Score Hurmic (2nd Tour)',
+                        data: data.map(d => d.t2),
+                        backgroundColor: '#FFA500', // Orange
+                        borderRadius: 4
+                    }
                 ]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        backgroundColor: 'white',
+                        titleColor: '#111',
+                        bodyColor: '#444',
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 15,
+                        displayColors: false,
+                        callbacks: {
+                            title: (context) => data[context[0].dataIndex].bureau,
+                            label: (context) => {
+                                const d = data[context.dataIndex];
+                                return [
+                                    'Quartier : ' + d.quartier,
+                                    '-----------------------',
+                                    'Voix T1 (Potentiel) : ' + d.t1,
+                                    'Voix T2 (Réel) : ' + d.t2,
+                                    'Voix gagnées : +' + d.supp,
+                                    '-----------------------',
+                                    'Taux de report : ' + d.report,
+                                    'Participation : ' + d.part
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Nombre de voix' } }
+                }
+            }
         });
     </script>
 </body>
