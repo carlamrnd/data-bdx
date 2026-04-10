@@ -1,96 +1,53 @@
-
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Bastions Mobilisés - Bordeaux 2026</title>
+    <title>Comparatif Scores T1 vs T2 - Bastions de Gauche</title>
+    <meta charset="utf-8" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: -apple-system, system-ui, sans-serif; padding: 20px; background: #fff; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; border: 1px solid #eee; }
-        h2 { text-align: center; color: #111; font-size: 22px; margin-bottom: 5px; }
-        p { text-align: center; color: #666; font-size: 14px; margin-bottom: 35px; }
-        .legend-custom { display: flex; justify-content: center; gap: 20px; font-size: 12px; margin-bottom: 20px; color: #444; }
-        .leg-item { display: flex; align-items: center; gap: 6px; }
-        .dot { width: 10px; height: 10px; border-radius: 2px; }
+        body { font-family: -apple-system, sans-serif; background: white; padding: 20px; }
+        .chart-container { position: relative; height: 400px; width: 100%; max-width: 800px; margin: auto; }
+        h2 { text-align: center; font-size: 18px; color: #333; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Bastions mobilisés : comparaison des voix de gauche entre les deux tours</h2>
-        <p>Comparaison entre le réservoir de voix de gauche (T1) et le score de Pierre Hurmic (T2) dans les bureaux mobilisés.</p>
-        
-        <div class="legend-custom">
-            <div class="leg-item"><div class="dot" style="background:#9ca3af"></div> Potentiel Gauche (T1)</div>
-            <div class="leg-item"><div class="dot" style="background:#f97316"></div> Réel Hurmic (T2)</div>
-        </div>
-
+    <h2>Évolution du vote de gauche entre les deux tours</h2>
+    <div class="chart-container">
         <canvas id="myChart"></canvas>
     </div>
-
     <script>
-        const rawData = [{"bureau": "Menuts 3", "code": "1063", "t1": 492, "t2": 504, "difference": 12, "report": "102.0%"}, {"bureau": "Paul Bert 1", "code": "1041", "t1": 441, "t2": 467, "difference": 26, "report": "106.0%"}, {"bureau": "Paul Bert 3", "code": "1043", "t1": 423, "t2": 435, "difference": 12, "report": "103.0%"}];
-        
         const ctx = document.getElementById('myChart').getContext('2d');
-        new Chart(ctx, {
+        const myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: rawData.map(d => d.bureau),
-                datasets: [
-                    {
-                        label: 'Potentiel Gauche (T1)',
-                        data: rawData.map(d => d.t1),
-                        backgroundColor: '#9ca3af',
-                        borderRadius: 2,
-                        categoryPercentage: 0.8,
-                        barPercentage: 0.9
-                    },
-                    {
-                        label: 'Pierre Hurmic (T2)',
-                        data: rawData.map(d => d.t2),
-                        backgroundColor: '#f97316',
-                        borderRadius: 2,
-                        categoryPercentage: 0.8,
-                        barPercentage: 0.9
-                    }
-                ]
+                labels: ['Paul Bert 1', 'Paul Bert 3', 'Menuts 3', 'Menuts 2', 'Meunier 1', 'Meunier 3'],
+                datasets: [{
+                    label: 'Gauche (1er Tour)',
+                    data: [56.92, 56.97, 68.88, 72.68, 68.51, 65.59],
+                    backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                    borderColor: 'rgba(255, 0, 0, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Hurmic (2nd Tour)',
+                    data: [66.24, 64.35, 77.42, 79.24, 75.49, 72.43],
+                    backgroundColor: 'rgba(255, 105, 180, 0.7)',
+                    borderColor: 'rgba(255, 105, 180, 1)',
+                    borderWidth: 1
+                }]
             },
             options: {
                 responsive: true,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-                        padding: 12,
-                        callbacks: {
-                            title: (items) => rawData[items[0].dataIndex].bureau + " (Bureau " + rawData[items[0].dataIndex].code + ")",
-                            label: function(context) {
-                                const d = rawData[context.dataIndex];
-                                if (context.datasetIndex === 0) return "Potentiel T1 : " + d.t1 + " voix";
-                                return "Réel Hurmic T2 : " + d.t2 + " voix";
-                            },
-                            afterBody: function(context) {
-                                const d = rawData[context[0].dataIndex];
-                                const labelDiff = d.difference >= 0 ? "Voix gagnées : " : "Voix perdues : ";
-                                return [
-                                    '',
-                                    labelDiff + Math.abs(d.difference),
-                                    'Taux de report : ' + d.report
-                                ];
-                            }
-                        }
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 40,
+                        title: { display: true, text: 'Score en %' }
                     }
                 },
-                scales: {
-                    y: { 
-                        beginAtZero: true,
-                        title: { display: true, text: 'Nombre de voix', font: { weight: 'bold' } },
-                        grid: { color: '#f9f9f9' }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { font: { size: 10 } }
-                    }
+                plugins: {
+                    legend: { position: 'bottom' }
                 }
             }
         });
