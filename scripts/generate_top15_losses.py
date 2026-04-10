@@ -1,36 +1,45 @@
 import csv
 import json
 
+# Mapping des noms de bureaux
+bureau_names = {}
+try:
+    with open('noms des bureaux de vote.csv', mode='r', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        next(reader) # skip header
+        for row in reader:
+            if row:
+                bureau_names[row[0].strip()] = row[1].strip()
+except Exception as e:
+    print(f"Erreur lors de la lecture des noms de bureaux: {e}")
+
 data = []
 # On lit le fichier dernier graph.csv
 with open('dernier graph.csv', mode='r', encoding='utf-8') as f:
     reader = csv.reader(f)
     header = next(reader)
     
-    # User mapping: BO (67th column, index 66), BJ (62nd column, index 61), BL (64th column, index 63)
-    # 0: Code BV
-    # 61: TOTAL GAUCHE T1 (BJ)
-    # 63: Voix 2 (BL)
-    # 66: NOMBRE DE VOIX PERDUES (BO)
-    
     for row in reader:
         if not row or len(row) < 67: continue
         
         try:
-            bureau = row[0].strip()
-            # NOMBRE DE VOIX PERDUES (BO)
+            bureau_code = row[0].strip()
+            # On récupère le nom du bureau ou on garde le code si non trouvé
+            bureau = bureau_names.get(bureau_code, bureau_code)
+            
+            # BO (67th column, index 66)
             perte_val = row[66].replace(',', '.').replace(' ', '').strip()
             perte = abs(float(perte_val))
             
-            # TOTAL GAUCHE T1 (BJ)
+            # BJ (62nd column, index 61)
             t1_val = row[61].replace(',', '.').replace(' ', '').strip()
             t1 = float(t1_val)
             
-            # Voix 2 (BL)
+            # BL (64th column, index 63)
             t2_val = row[63].replace(',', '.').replace(' ', '').strip()
             t2 = float(t2_val)
             
-            # Report % (Using index 65: % Voix/exprimés 2 as a proxy if needed)
+            # Report % (Using index 65: % Voix/exprimés 2 as a proxy)
             report = row[65].strip()
             
             data.append({
@@ -41,7 +50,6 @@ with open('dernier graph.csv', mode='r', encoding='utf-8') as f:
                 'rep': report
             })
         except Exception as e:
-            # print(f"Error at bureau {row[0]}: {e}")
             continue
 
 # Tri décroissant par perte
