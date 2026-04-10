@@ -3,18 +3,17 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Top 15 - Pertes de voix de gauche</title>
+    <title>Top 15 Pertes de Voix - Bordeaux</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: -apple-system, sans-serif; background: white; padding: 20px; }
-        .chart-container { height: 600px; width: 100%; max-width: 900px; margin: auto; }
-        h2 { text-align: center; font-size: 18px; margin-bottom: 30px; color: #333; }
+        .chart-container { height: 600px; width: 100%; max-width: 850px; margin: auto; }
+        h2 { text-align: center; font-size: 18px; color: #333; margin-bottom: 30px; }
     </style>
 </head>
 <body>
     <div class="chart-container">
-        <h2>Top 15 : Bureaux de vote où la gauche a perdu le plus de voix au 2nd tour</h2>
+        <h2>Top 15 des bureaux de vote où la gauche a perdu le plus de voix au 2nd tour</h2>
         <canvas id="top15Chart"></canvas>
     </div>
     <script>
@@ -27,14 +26,14 @@
                 labels: d.map(x => x.b),
                 datasets: [{
                     label: 'Voix manquantes',
-                    data: d.map(x => x.diff),
-                    backgroundColor: '#FF0000', // Rouge pour la perte
+                    data: d.map(x => x.perte),
+                    backgroundColor: '#FF0000',
                     borderRadius: 4,
-                    barThickness: 20
+                    barThickness: 22
                 }]
             },
             options: {
-                indexAxis: 'y', // Barres horizontales
+                indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
@@ -51,7 +50,7 @@
                             label: function(ctx) {
                                 const i = ctx.dataIndex;
                                 return [
-                                    'Voix manquantes : ' + d[i].diff,
+                                    'Voix manquantes : ' + d[i].perte,
                                     'Potentiel T1 (Somme BJ+BK) : ' + d[i].t1,
                                     'Hurmic T2 (CF) : ' + d[i].t2,
                                     'Taux de report : ' + d[i].rep
@@ -61,7 +60,7 @@
                     }
                 },
                 scales: {
-                    x: { grid: { display: false }, title: { display: true, text: 'Nombre de voix' } },
+                    x: { grid: { display: true, color: '#f0f0f0' }, title: { display: true, text: 'Nombre de voix manquantes' } },
                     y: { grid: { display: false }, ticks: { font: { weight: 'bold' } } }
                 }
             }
