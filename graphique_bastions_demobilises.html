@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Démobilisation Bastions de Gauche - Bordeaux 2026</title>
+    <title>Démobilisation Bastions de Gauche</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f9f9f9; padding: 20px; }
-        .chart-container { position: relative; height: 500px; width: 100%; max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        h2 { text-align: center; font-size: 19px; color: #333; margin-bottom: 30px; }
+        body { font-family: sans-serif; background-color: #f9f9f9; padding: 20px; }
+        .chart-container { height: 500px; width: 100%; max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 12px; }
+        h2 { text-align: center; font-size: 18px; margin-bottom: 30px; }
     </style>
 </head>
 <body>
@@ -16,81 +16,23 @@
         <h2>Bastions démobilisés : comparaison des voix de gauche entre les deux tours</h2>
         <canvas id="demobilisationChart"></canvas>
     </div>
-
     <script>
         const ctx = document.getElementById('demobilisationChart').getContext('2d');
-        
         const data = [
-            { bureau: 'Menuts 2', quartier: 'Saint-Michel / Victoire', t1: 511, t2: 500, manquantes: 11, report: '97.8%', part1: '53.26%', part2: '53.26%' },
-            { bureau: 'Meunier 1', quartier: 'Saint-Michel / Victoire', t1: 444, t2: 428, manquantes: 16, report: '96.4%', part1: '46.72%', part2: '46.72%' },
-            { bureau: 'Meunier 3', quartier: 'Saint-Michel / Victoire', t1: 460, t2: 423, manquantes: 37, report: '92.0%', part1: '47.47%', part2: '47.47%' }
+            { b: 'Menuts 2', t1: 36, t2: 131 },
+            { b: 'Meunier 1', t1: 36, t2: 139 },
+            { b: 'Meunier 3', t1: 46, t2: 161 }
         ];
-
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: data.map(d => d.bureau),
+                labels: data.map(d => d.b),
                 datasets: [
-                    {
-                        label: 'Potentiel Gauche (1er Tour)',
-                        data: data.map(d => d.t1),
-                        backgroundColor: '#E0E0E0', // Gris clair
-                        borderColor: '#BDBDBD',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    },
-                    {
-                        label: 'Score Hurmic (2nd Tour)',
-                        data: data.map(d => d.t2),
-                        backgroundColor: '#FF69B4', // Rose
-                        borderColor: '#FF1493',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }
+                    { label: 'Potentiel Gauche (T1)', data: data.map(d => d.t1), backgroundColor: '#E0E0E0' },
+                    { label: 'Hurmic (T2)', data: data.map(d => d.t2), backgroundColor: '#FF69B4' }
                 ]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 15, padding: 20 } },
-                    tooltip: {
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                        titleColor: '#111',
-                        bodyColor: '#444',
-                        borderColor: '#ddd',
-                        borderWidth: 1,
-                        padding: 15,
-                        displayColors: false,
-                        callbacks: {
-                            title: (context) => data[context[0].dataIndex].bureau,
-                            label: (context) => {
-                                const d = data[context.dataIndex];
-                                return [
-                                    'Quartier : ' + d.quartier,
-                                    '-----------------------',
-                                    'Voix T1 (Potentiel) : ' + d.t1,
-                                    'Voix T2 (Réel) : ' + d.t2,
-                                    'Voix manquantes : ' + d.manquantes,
-                                    '-----------------------',
-                                    'Taux de report : ' + d.report,
-                                    'Participation T1 : ' + d.part1,
-                                    'Participation T2 : ' + d.part2
-                                ];
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: { 
-                        beginAtZero: true, 
-                        grid: { color: '#f0f0f0' },
-                        title: { display: true, text: 'Nombre de voix' }
-                    },
-                    x: { grid: { display: false } }
-                },
-                animation: { duration: 1500, easing: 'easeOutQuart' }
-            }
+            options: { responsive: true, maintainAspectRatio: false }
         });
     </script>
 </body>
