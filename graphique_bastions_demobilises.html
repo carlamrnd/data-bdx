@@ -8,21 +8,18 @@
     <style>
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f9f9f9; padding: 20px; }
         .chart-container { position: relative; height: 500px; width: 100%; max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        h2 { text-align: center; font-size: 20px; color: #333; margin-bottom: 5px; }
-        p.subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 30px; }
+        h2 { text-align: center; font-size: 19px; color: #333; margin-bottom: 30px; }
     </style>
 </head>
 <body>
     <div class="chart-container">
-        <h2>Analyse de la démobilisation (Bastions Démobilisés)</h2>
-        <p class="subtitle">Comparaison entre le réservoir théorique (T1) et le score réel de Hurmic (T2)</p>
+        <h2>Bastions démobilisés : comparaison des voix de gauche entre les deux tours</h2>
         <canvas id="demobilisationChart"></canvas>
     </div>
 
     <script>
         const ctx = document.getElementById('demobilisationChart').getContext('2d');
         
-        // Données extraites
         const data = [
             { bureau: 'Menuts 2', quartier: 'Saint-Michel / Victoire', t1: 511, t2: 500, manquantes: 11, report: '97.8%', part1: '53.26%', part2: '53.26%' },
             { bureau: 'Meunier 1', quartier: 'Saint-Michel / Victoire', t1: 444, t2: 428, manquantes: 16, report: '96.4%', part1: '46.72%', part2: '46.72%' },
@@ -45,8 +42,8 @@
                     {
                         label: 'Score Hurmic (2nd Tour)',
                         data: data.map(d => d.t2),
-                        backgroundColor: '#E53935', // Rouge contrasté
-                        borderColor: '#C62828',
+                        backgroundColor: '#FF69B4', // Rose
+                        borderColor: '#FF1493',
                         borderWidth: 1,
                         borderRadius: 4
                     }
