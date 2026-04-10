@@ -25,11 +25,11 @@
             data: {
                 labels: d.map(x => x.b),
                 datasets: [{
-                    label: 'Voix manquantes',
+                    label: 'Perte de voix',
                     data: d.map(x => x.perte),
-                    backgroundColor: '#FF0000',
+                    backgroundColor: '#FF0000', // Rouge pour la perte
                     borderRadius: 4,
-                    barThickness: 22
+                    barThickness: 20
                 }]
             },
             options: {
@@ -50,7 +50,7 @@
                             label: function(ctx) {
                                 const i = ctx.dataIndex;
                                 return [
-                                    'Voix manquantes : ' + d[i].perte,
+                                    'Perte de voix (CH) : ' + d[i].perte,
                                     'Potentiel T1 (Somme BJ+BK) : ' + d[i].t1,
                                     'Hurmic T2 (CF) : ' + d[i].t2,
                                     'Taux de report : ' + d[i].rep
@@ -60,8 +60,18 @@
                     }
                 },
                 scales: {
-                    x: { grid: { display: true, color: '#f0f0f0' }, title: { display: true, text: 'Nombre de voix manquantes' } },
-                    y: { grid: { display: false }, ticks: { font: { weight: 'bold' } } }
+                    x: { 
+                        grid: { display: true, color: '#f0f0f0' }, 
+                        title: { display: true, text: 'Points de perte' },
+                        min: -40,
+                        max: 0,
+                        ticks: { stepSize: 5 }
+                    },
+                    y: { 
+                        grid: { display: false }, 
+                        ticks: { font: { weight: 'bold' }, color: '#333' },
+                        position: 'right' // Place les noms à droite pour qu'ils ne soient pas écrasés par les barres négatives
+                    }
                 }
             }
         });

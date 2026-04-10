@@ -13,11 +13,12 @@ with open('top 15.csv', mode='r', encoding='utf-8') as f:
         try:
             bureau = row[0].strip()
             # La perte est dans la colonne CH (index 85)
-            # On nettoie la valeur (parfois des espaces ou virgules)
             perte_val = row[85].replace(',', '.').replace(' ', '').strip()
-            perte = abs(float(perte_val))
+            perte = float(perte_val)
             
-            # Données additionnelles pour le tooltip
+            # On ne garde que les pertes (valeurs négatives)
+            if perte >= 0: continue
+            
             t1 = float(row[59]) + float(row[60]) # Potentiel T1
             t2 = float(row[83]) # Hurmic T2
             report = row[89].strip() # Taux de report
@@ -32,8 +33,8 @@ with open('top 15.csv', mode='r', encoding='utf-8') as f:
         except ValueError:
             continue
 
-# Tri décroissant par perte
-data_sorted = sorted(data, key=lambda x: x['perte'], reverse=True)[:15]
+# Tri par perte (la plus forte perte en premier : -37, -35, ..., -12)
+data_sorted = sorted(data, key=lambda x: x['perte'])[:15]
 
 html = f"""
 <!DOCTYPE html>
@@ -62,11 +63,11 @@ html = f"""
             data: {{
                 labels: d.map(x => x.b),
                 datasets: [{{
-                    label: 'Voix manquantes',
+                    label: 'Perte de voix',
                     data: d.map(x => x.perte),
-                    backgroundColor: '#FF0000',
+                    backgroundColor: '#FF0000', // Rouge pour la perte
                     borderRadius: 4,
-                    barThickness: 22
+                    barThickness: 20
                 }}]
             }},
             options: {{
@@ -87,7 +88,7 @@ html = f"""
                             label: function(ctx) {{
                                 const i = ctx.dataIndex;
                                 return [
-                                    'Voix manquantes : ' + d[i].perte,
+                                    'Perte de voix (CH) : ' + d[i].perte,
                                     'Potentiel T1 (Somme BJ+BK) : ' + d[i].t1,
                                     'Hurmic T2 (CF) : ' + d[i].t2,
                                     'Taux de report : ' + d[i].rep
@@ -97,8 +98,18 @@ html = f"""
                     }}
                 }},
                 scales: {{
-                    x: {{ grid: {{ display: true, color: '#f0f0f0' }}, title: {{ display: true, text: 'Nombre de voix manquantes' }} }},
-                    y: {{ grid: {{ display: false }}, ticks: {{ font: {{ weight: 'bold' }} }} }}
+                    x: {{ 
+                        grid: {{ display: true, color: '#f0f0f0' }}, 
+                        title: {{ display: true, text: 'Points de perte' }},
+                        min: -40,
+                        max: 0,
+                        ticks: {{ stepSize: 5 }}
+                    }},
+                    y: {{ 
+                        grid: {{ display: false }}, 
+                        ticks: {{ font: {{ weight: 'bold' }}, color: '#333' }},
+                        position: 'right' // Place les noms à droite pour qu'ils ne soient pas écrasés par les barres négatives
+                    }}
                 }}
             }}
         }});
