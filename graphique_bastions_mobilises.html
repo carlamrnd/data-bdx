@@ -1,82 +1,81 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Bastions Mobilisés - Bordeaux 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobilisation Bastions de Gauche - Bordeaux 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: -apple-system, system-ui, sans-serif; padding: 20px; background: #fff; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; border: 1px solid #eee; }
-        h2 { text-align: center; color: #111; font-size: 22px; margin-bottom: 5px; }
-        p { text-align: center; color: #666; font-size: 14px; margin-bottom: 35px; }
-        .legend-custom { display: flex; justify-content: center; gap: 20px; font-size: 12px; margin-bottom: 20px; color: #444; }
-        .leg-item { display: flex; align-items: center; gap: 6px; }
-        .dot { width: 10px; height: 10px; border-radius: 2px; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f9f9f9; padding: 20px; }
+        .chart-container { position: relative; height: 500px; width: 100%; max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h2 { text-align: center; font-size: 19px; color: #333; margin-bottom: 30px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Bastions Mobilisés : Potentiel vs Réel</h2>
-        <p>Comparaison entre le réservoir de voix de gauche (T1) et le score de Pierre Hurmic (T2) dans les bureaux mobilisés.</p>
-        
-        <div class="legend-custom">
-            <div class="leg-item"><div class="dot" style="background:#9ca3af"></div> Potentiel Gauche (T1)</div>
-            <div class="leg-item"><div class="dot" style="background:#f97316"></div> Réel Hurmic (T2)</div>
-        </div>
-
-        <canvas id="myChart"></canvas>
+    <div class="chart-container">
+        <h2>Bastions mobilisés : comparaison des voix de gauche entre les deux tours</h2>
+        <canvas id="mobilisationChart"></canvas>
     </div>
 
     <script>
-        const rawData = [{"bureau": "Menuts 3", "code": "1063", "quartier": "Bordeaux", "t1": 12, "t2": 41, "difference": 29, "report": "102,44%"}, {"bureau": "Paul Bert 3", "code": "1043", "quartier": "Bordeaux", "t1": 12, "t2": 35, "difference": 23, "report": "102,84%"}, {"bureau": "Paul Bert 1", "code": "1041", "quartier": "Bordeaux", "t1": -17, "t2": 34, "difference": 51, "report": "105,90%"}];
+        const ctx = document.getElementById('mobilisationChart').getContext('2d');
         
-        const ctx = document.getElementById('myChart').getContext('2d');
+        const data = [
+            { bureau: 'Paul Bert 1', quartier: 'Hôtel de Ville / Paul Bert', t1: 441, t2: 467, supp: 26, report: '105.9%', part1: '52.96%', part2: '52.96%' },
+            { bureau: 'Paul Bert 3', quartier: 'Hôtel de Ville / Paul Bert', t1: 423, t2: 435, supp: 12, report: '102.8%', part1: '55.64%', part2: '55.64%' },
+            { bureau: 'Menuts 3', quartier: 'Saint-Michel', t1: 492, t2: 504, supp: 12, report: '102.4%', part1: '54.56%', part2: '54.56%' }
+        ];
+
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: rawData.map(d => d.bureau),
+                labels: data.map(d => d.bureau),
                 datasets: [
                     {
-                        label: 'Potentiel Gauche (T1)',
-                        data: rawData.map(d => d.t1),
-                        backgroundColor: '#9ca3af',
-                        borderRadius: 2,
-                        categoryPercentage: 0.8,
-                        barPercentage: 0.9
+                        label: 'Potentiel Gauche (1er Tour)',
+                        data: data.map(d => d.t1),
+                        backgroundColor: '#E0E0E0', // Gris clair
+                        borderColor: '#BDBDBD',
+                        borderWidth: 1,
+                        borderRadius: 4
                     },
                     {
-                        label: 'Pierre Hurmic (T2)',
-                        data: rawData.map(d => d.t2),
-                        backgroundColor: '#f97316',
-                        borderRadius: 2,
-                        categoryPercentage: 0.8,
-                        barPercentage: 0.9
+                        label: 'Score Hurmic (2nd Tour)',
+                        data: data.map(d => d.t2),
+                        backgroundColor: '#FFA500', // Orange
+                        borderColor: '#FF8C00',
+                        borderWidth: 1,
+                        borderRadius: 4
                     }
                 ]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
+                    legend: { position: 'bottom', labels: { boxWidth: 15, padding: 20 } },
                     tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-                        padding: 12,
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#111',
+                        bodyColor: '#444',
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 15,
+                        displayColors: false,
                         callbacks: {
-                            title: (items) => rawData[items[0].dataIndex].bureau + " (Bureau " + rawData[items[0].dataIndex].code + ")",
-                            label: function(context) {
-                                const d = rawData[context.dataIndex];
-                                if (context.datasetIndex === 0) return "Potentiel T1 : " + d.t1 + " voix";
-                                return "Réel Hurmic T2 : " + d.t2 + " voix";
-                            },
-                            afterBody: function(context) {
-                                const d = rawData[context[0].dataIndex];
-                                const labelDiff = d.difference >= 0 ? "Voix gagnées : " : "Voix perdues : ";
+                            title: (context) => data[context[0].dataIndex].bureau,
+                            label: (context) => {
+                                const d = data[context.dataIndex];
                                 return [
-                                    '',
-                                    labelDiff + Math.abs(d.difference),
+                                    'Quartier : ' + d.quartier,
+                                    '-----------------------',
+                                    'Voix T1 (Potentiel) : ' + d.t1,
+                                    'Voix T2 (Réel) : ' + d.t2,
+                                    'Voix gagnées : +' + d.supp,
+                                    '-----------------------',
                                     'Taux de report : ' + d.report,
-                                    'Quartier : ' + d.quartier
+                                    'Participation T1 : ' + d.part1,
+                                    'Participation T2 : ' + d.part2
                                 ];
                             }
                         }
@@ -84,15 +83,13 @@
                 },
                 scales: {
                     y: { 
-                        beginAtZero: true,
-                        title: { display: true, text: 'Nombre de voix', font: { weight: 'bold' } },
-                        grid: { color: '#f9f9f9' }
+                        beginAtZero: true, 
+                        grid: { color: '#f0f0f0' },
+                        title: { display: true, text: 'Nombre de voix' }
                     },
-                    x: {
-                        grid: { display: false },
-                        ticks: { font: { size: 10 } }
-                    }
-                }
+                    x: { grid: { display: false } }
+                },
+                animation: { duration: 1500, easing: 'easeOutQuart' }
             }
         });
     </script>
