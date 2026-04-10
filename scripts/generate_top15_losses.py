@@ -2,26 +2,36 @@ import csv
 import json
 
 data = []
-# On lit le fichier top 15.csv
-with open('top 15.csv', mode='r', encoding='utf-8') as f:
+# On lit le fichier dernier graph.csv
+with open('dernier graph.csv', mode='r', encoding='utf-8') as f:
     reader = csv.reader(f)
     header = next(reader)
     
+    # User mapping: BO (67th column, index 66), BJ (62nd column, index 61), BL (64th column, index 63)
+    # 0: Code BV
+    # 61: TOTAL GAUCHE T1 (BJ)
+    # 63: Voix 2 (BL)
+    # 66: NOMBRE DE VOIX PERDUES (BO)
+    
     for row in reader:
-        if not row or len(row) < 86: continue
+        if not row or len(row) < 67: continue
         
         try:
             bureau = row[0].strip()
-            # La perte est dans la colonne CH (index 85)
-            perte_val = row[85].replace(',', '.').replace(' ', '').strip()
-            perte = float(perte_val)
+            # NOMBRE DE VOIX PERDUES (BO)
+            perte_val = row[66].replace(',', '.').replace(' ', '').strip()
+            perte = abs(float(perte_val))
             
-            # On ne garde que les pertes (valeurs négatives)
-            if perte >= 0: continue
+            # TOTAL GAUCHE T1 (BJ)
+            t1_val = row[61].replace(',', '.').replace(' ', '').strip()
+            t1 = float(t1_val)
             
-            t1 = float(row[59]) + float(row[60]) # Potentiel T1
-            t2 = float(row[83]) # Hurmic T2
-            report = row[89].strip() # Taux de report
+            # Voix 2 (BL)
+            t2_val = row[63].replace(',', '.').replace(' ', '').strip()
+            t2 = float(t2_val)
+            
+            # Report % (Using index 65: % Voix/exprimés 2 as a proxy if needed)
+            report = row[65].strip()
             
             data.append({
                 'b': bureau,
@@ -30,18 +40,19 @@ with open('top 15.csv', mode='r', encoding='utf-8') as f:
                 't2': int(t2),
                 'rep': report
             })
-        except ValueError:
+        except Exception as e:
+            # print(f"Error at bureau {row[0]}: {e}")
             continue
 
-# Tri par perte (la plus forte perte en premier : -37, -35, ..., -12)
-data_sorted = sorted(data, key=lambda x: x['perte'])[:15]
+# Tri décroissant par perte
+data_sorted = sorted(data, key=lambda x: x['perte'], reverse=True)[:15]
 
 html = f"""
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Top 15 Pertes de Voix - Bordeaux</title>
+    <title>Top 15 Pertes - Bordeaux</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {{ font-family: -apple-system, sans-serif; background: white; padding: 20px; }}
@@ -51,7 +62,7 @@ html = f"""
 </head>
 <body>
     <div class="chart-container">
-        <h2>Top 15 des bureaux de vote où la gauche a perdu le plus de voix au 2nd tour</h2>
+        <h2>Top 15 : Bureaux où la gauche a perdu le plus de voix au 2nd tour</h2>
         <canvas id="top15Chart"></canvas>
     </div>
     <script>
@@ -63,11 +74,11 @@ html = f"""
             data: {{
                 labels: d.map(x => x.b),
                 datasets: [{{
-                    label: 'Perte de voix',
+                    label: 'Voix perdues',
                     data: d.map(x => x.perte),
-                    backgroundColor: '#FF0000', // Rouge pour la perte
+                    backgroundColor: '#FF0000',
                     borderRadius: 4,
-                    barThickness: 20
+                    barThickness: 22
                 }}]
             }},
             options: {{
@@ -88,9 +99,9 @@ html = f"""
                             label: function(ctx) {{
                                 const i = ctx.dataIndex;
                                 return [
-                                    'Perte de voix (CH) : ' + d[i].perte,
-                                    'Potentiel T1 (Somme BJ+BK) : ' + d[i].t1,
-                                    'Hurmic T2 (CF) : ' + d[i].t2,
+                                    'Voix perdues : ' + d[i].perte,
+                                    'Potentiel Gauche T1 (BJ) : ' + d[i].t1,
+                                    'Score Hurmic T2 (BL) : ' + d[i].t2,
                                     'Taux de report : ' + d[i].rep
                                 ];
                             }}
@@ -100,15 +111,11 @@ html = f"""
                 scales: {{
                     x: {{ 
                         grid: {{ display: true, color: '#f0f0f0' }}, 
-                        title: {{ display: true, text: 'Points de perte' }},
-                        min: -40,
-                        max: 0,
-                        ticks: {{ stepSize: 5 }}
+                        title: {{ display: true, text: 'Nombre de voix perdues' }} 
                     }},
                     y: {{ 
                         grid: {{ display: false }}, 
-                        ticks: {{ font: {{ weight: 'bold' }}, color: '#333' }},
-                        position: 'right' // Place les noms à droite pour qu'ils ne soient pas écrasés par les barres négatives
+                        ticks: {{ font: {{ weight: 'bold' }} }} 
                     }}
                 }}
             }}

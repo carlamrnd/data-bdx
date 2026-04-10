@@ -1,66 +1,72 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
+    <meta charset="UTF-8">
     <title>Top 15 Pertes - Bordeaux</title>
-    <meta charset="utf-8" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: sans-serif; background: white; padding: 20px; }
+        body { font-family: -apple-system, sans-serif; background: white; padding: 20px; }
         .chart-container { height: 600px; width: 100%; max-width: 850px; margin: auto; }
-        h2 { text-align: center; font-size: 18px; margin-bottom: 30px; }
+        h2 { text-align: center; font-size: 18px; color: #333; margin-bottom: 30px; }
     </style>
 </head>
 <body>
     <div class="chart-container">
         <h2>Top 15 : Bureaux où la gauche a perdu le plus de voix au 2nd tour</h2>
-        <canvas id="pertesChart"></canvas>
+        <canvas id="top15Chart"></canvas>
     </div>
     <script>
-        const ctx = document.getElementById('pertesChart').getContext('2d');
-        const d = [];
+        const ctx = document.getElementById('top15Chart').getContext('2d');
+        const d = [{"b": "5003", "perte": 37.0, "t1": 460, "t2": 423, "rep": "72,43 %"}, {"b": "4163", "perte": 35.0, "t1": 173, "t2": 138, "rep": "47,75 %"}, {"b": "5045", "perte": 32.0, "t1": 399, "t2": 367, "rep": "63,06 %"}, {"b": "4161", "perte": 30.0, "t1": 235, "t2": 205, "rep": "49,04 %"}, {"b": "4162", "perte": 26.0, "t1": 257, "t2": 231, "rep": "48,02 %"}, {"b": "4121", "perte": 22.0, "t1": 148, "t2": 126, "rep": "63,32 %"}, {"b": "5084", "perte": 20.0, "t1": 288, "t2": 268, "rep": "60,09 %"}, {"b": "1061", "perte": 17.0, "t1": 497, "t2": 480, "rep": "75,35 %"}, {"b": "5002", "perte": 17.0, "t1": 586, "t2": 569, "rep": "71,93 %"}, {"b": "5001", "perte": 16.0, "t1": 444, "t2": 428, "rep": "75,49 %"}, {"b": "1022", "perte": 15.0, "t1": 285, "t2": 270, "rep": "58,57 %"}, {"b": "1021", "perte": 14.0, "t1": 287, "t2": 273, "rep": "52,10 %"}, {"b": "5005", "perte": 13.0, "t1": 198, "t2": 185, "rep": "70,88 %"}, {"b": "4182", "perte": 12.0, "t1": 196, "t2": 184, "rep": "41,82 %"}, {"b": "4141", "perte": 12.0, "t1": 267, "t2": 255, "rep": "49,80 %"}];
         
         new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: d.map(x => x.b),
                 datasets: [{
-                    label: 'Perte de voix',
+                    label: 'Voix perdues',
                     data: d.map(x => x.perte),
                     backgroundColor: '#FF0000',
-                    borderRadius: 3
+                    borderRadius: 4,
+                    barThickness: 22
                 }]
             },
             options: {
                 indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: {
-                    x: { 
-                        min: -45, 
-                        max: 0,
-                        ticks: { stepSize: 5 },
-                        title: { display: true, text: 'Nombre de voix manquantes' }
-                    },
-                    y: { 
-                        position: 'right', // Met les noms à droite pour qu'ils soient lisibles
-                        ticks: { font: { weight: 'bold' } }
-                    }
-                },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
+                        backgroundColor: 'white',
+                        titleColor: '#333',
+                        bodyColor: '#555',
+                        borderColor: '#ccc',
+                        borderWidth: 1,
+                        padding: 15,
+                        displayColors: false,
                         callbacks: {
                             label: function(ctx) {
                                 const i = ctx.dataIndex;
                                 return [
-                                    'Voix manquantes : ' + d[i].perte,
-                                    'Potentiel T1 : ' + d[i].t1,
-                                    'Hurmic T2 : ' + d[i].t2,
+                                    'Voix perdues : ' + d[i].perte,
+                                    'Potentiel Gauche T1 (BJ) : ' + d[i].t1,
+                                    'Score Hurmic T2 (BL) : ' + d[i].t2,
                                     'Taux de report : ' + d[i].rep
                                 ];
                             }
                         }
+                    }
+                },
+                scales: {
+                    x: { 
+                        grid: { display: true, color: '#f0f0f0' }, 
+                        title: { display: true, text: 'Nombre de voix perdues' } 
+                    },
+                    y: { 
+                        grid: { display: false }, 
+                        ticks: { font: { weight: 'bold' } } 
                     }
                 }
             }
