@@ -1,38 +1,62 @@
+
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Démobilisation Bastions de Gauche</title>
+    <title>Bastions démobilisés</title>
+    <meta charset="utf-8" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: sans-serif; background-color: #f9f9f9; padding: 20px; }
-        .chart-container { height: 500px; width: 100%; max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 12px; }
-        h2 { text-align: center; font-size: 18px; margin-bottom: 30px; }
+        body { font-family: sans-serif; background: #f8f9fa; padding: 20px; }
+        .chart-container { height: 500px; width: 100%; max-width: 850px; margin: auto; background: white; padding: 25px; border-radius: 12px; }
+        h2 { text-align: center; font-size: 19px; margin-bottom: 30px; }
     </style>
 </head>
 <body>
     <div class="chart-container">
         <h2>Bastions démobilisés : comparaison des voix de gauche entre les deux tours</h2>
-        <canvas id="demobilisationChart"></canvas>
+        <canvas id="myChart"></canvas>
     </div>
     <script>
-        const ctx = document.getElementById('demobilisationChart').getContext('2d');
-        const data = [
-            { b: 'Menuts 2', t1: 36, t2: 131 },
-            { b: 'Meunier 1', t1: 36, t2: 139 },
-            { b: 'Meunier 3', t1: 46, t2: 161 }
-        ];
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const d = [{"b": "Menuts 2", "q": "Saint-Michel / Victoire", "t1": 511, "t2": 131, "manq": 380, "rep": "25.6%", "part1": "53,92 %", "part2": "53,26 %"}, {"b": "Meunier 1", "q": "Saint-Michel / Victoire", "t1": 444, "t2": 139, "manq": 305, "rep": "31.3%", "part1": "48,66 %", "part2": "46,72 %"}, {"b": "Meunier 3", "q": "Saint-Michel / Victoire", "t1": 460, "t2": 161, "manq": 299, "rep": "35.0%", "part1": "51,82 %", "part2": "47,47 %"}];
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: data.map(d => d.b),
+                labels: d.map(x => x.b),
                 datasets: [
-                    { label: 'Potentiel Gauche (T1)', data: data.map(d => d.t1), backgroundColor: '#E0E0E0' },
-                    { label: 'Hurmic (T2)', data: data.map(d => d.t2), backgroundColor: '#FF69B4' }
+                    { label: 'Potentiel Gauche (1er Tour)', data: d.map(x => x.t1), backgroundColor: '#E0E0E0', borderRadius: 5 },
+                    { label: 'Hurmic (2nd Tour)', data: d.map(x => x.t2), backgroundColor: '#FF69B4', borderRadius: 5 }
                 ]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        backgroundColor: 'white',
+                        titleColor: '#333',
+                        bodyColor: '#555',
+                        borderColor: '#ccc',
+                        borderWidth: 1,
+                        padding: 15,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(ctx) {
+                                const i = ctx.dataIndex;
+                                return [
+                                    'Quartier : ' + d[i].q,
+                                    'Voix T1 (Potentiel) : ' + d[i].t1,
+                                    'Voix T2 (Réel) : ' + d[i].t2,
+                                    'Voix manquantes : ' + d[i].manq,
+                                    'Taux de report : ' + d[i].rep,
+                                    'Participation T1 : ' + d[i].part1,
+                                    'Participation T2 : ' + d[i].part2
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
         });
     </script>
 </body>
